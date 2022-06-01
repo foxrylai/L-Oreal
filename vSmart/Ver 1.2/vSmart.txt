@@ -1,0 +1,8489 @@
+ system
+ host-name             LOREAL-vSmart
+ gps-location latitude 1.340781
+ gps-location longitude 103.889804
+ system-ip             1.1.100.2
+ site-id               1002
+ admin-tech-on-failure
+ organization-name     LOREAL-SDWAN
+ clock timezone Asia/Singapore
+ upgrade-confirm       20
+ vbond vbondLOREAL.viptela.com
+ aaa
+  auth-order local radius tacacs
+  usergroup basic
+   task system read write
+   task interface read write
+  !
+  usergroup netadmin
+  !
+  usergroup operator
+   task system read
+   task interface read
+   task policy read
+   task routing read
+   task security read
+  !
+  usergroup tenantadmin
+  !
+  user admin
+   password $6$QOBVjLM3tkNBdvlm$Kw8IHh9.arDi.3DCJ70e4793pjLMHjvsfP5IP0hnVeKep.tFSldwGnNrqyjoXvqn/8GIXipvjt9V8mFmbGPLS/
+  !
+  user ciscotac
+   password    $6$6zuPRsx7JTBjrrBu$9xDerw0gq1NheaCqMt85HQCqbSo1t42.SyFvgeZ1hfyzUy1UhAeOYAb.Eq3Y/maMjUS7Mdxn.zzX2v7ArGORo1
+   description ciscotac
+   group       operator
+  !
+  user gsp
+   password    $6$.JjnP6uCqv66lp83$c2yOtw2vdUWhwiDFq46OCLofKnDqiug0XVacSfuzIF6LQt6pp94lfOahCs2NfkbBPU2.z.cpOCtdJG9b6b0h31
+   description GSP
+   group       netadmin
+  !
+  user infra
+   password    $6$t9fNZ.IkYq0WiwQu$t72V2Wv5EK./uipPXLrh3SeGzIzKw1FDCtoudHQ67NZb288ATs0HG6KF9TUIUZPA2tJhadehHtiBhuUnQpmCq.
+   description infra
+   group       operator
+  !
+  user mse
+   password    $6$yF18SX2PS8qMm5hr$Y9bjwmOed3iWdqHzr6.v9pZKRI1v16WXpWeq6HYdiQN3FPWGT5vjON.H6M1I2ItaZByYFDbfXT2V/egIYR3B31
+   description mse
+   group       netadmin
+  !
+  user tac1
+   password    $6$GSG8WRWv2Y9X4Aqr$UAB4B8t3OlcvfL/AlTlm/h.hYjy7Mi69m6.X5cz45oAT9BovkwjXLKJP7wUa6g.UQOAyiXkgnnkWZSr9hNwTO.
+   description tac1
+   group       operator
+  !
+  user tac2
+   password    $6$Pw5kLKXOf2T48p82$HdJrG5bd9BpFGWuj8gK7A4JKc6s04FEyrEmVjVdgECo42a1vLRsnTzKjbCPnVgOiSRktfEt2jCsZS8U7/FCvl/
+   description tac2
+   group       netadmin
+  !
+  user tac3
+   password    $6$wVtMhOg/O766TOKI$Q1TYd.HGcWXa8zfIiVgK6BK/mn2U4l3GhRCAYzvIZTxmIQZieqOb5ipt4HIJXY2eAlA/sSF7.ImtZj/s8XHrE.
+   description tac3
+   group       netadmin
+  !
+  user vinod
+   password    $6$dArnAhI52BV0lawu$urfCSBGw1LXL5LvTsM0jqg2XHKmlhzx5t47OZSWUcbn1tUqSwLstUGUdyMseKRRp8jbP3sGO.LR86Cg4nwIbM1
+   description CiscoAS
+   group       operator
+  !
+ !
+ logging
+  disk
+   enable
+  !
+ !
+!
+omp
+ no shutdown
+ send-path-limit  16
+ graceful-restart
+!
+vpn 0
+ host vbondLOREAL.viptela.com ip 58.33.157.201 118.201.99.104 118.201.99.106 118.201.99.126 202.189.132.151
+ interface eth0
+  ip address 118.201.99.103/25
+  ipv6 dhcp-client
+  tunnel-interface
+   allow-service dhcp
+   allow-service dns
+   allow-service icmp
+   allow-service sshd
+   allow-service netconf
+   no allow-service ntp
+   no allow-service stun
+  !
+  no shutdown
+ !
+ ip route 0.0.0.0/0 118.201.99.1
+!
+vpn 512
+ interface eth1
+  ip address 172.28.240.103/24
+  no shutdown
+ !
+ ip route 0.0.0.0/0 172.28.240.1
+!
+policy
+ sla-class SLA_INTERNET
+  loss    50
+  latency 400
+  jitter  40
+ !
+ sla-class SLA_MPLS
+  loss    5
+  latency 150
+  jitter  20
+ !
+ data-policy _vpn1_DP_MERAKI_WEBEX
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-1068940716
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list      dpl_GRP_SRC_StepPlus
+     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+     destination-port             22
+     protocol                     6
+    !
+    action accept
+     count nat_-1068940716
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_-1068940716
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-1068940716
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_-1068940716
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     destination-data-prefix-list dpl_NANDAGLOBAL
+    !
+    action accept
+     count nat_-1068940716
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 91
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 101
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn1_dp_CHINA-NozScaler
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_822957482
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_CN05
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_CHINA_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list dpl_CHINA_NoZscaler
+    !
+    action accept
+     count nat_822957482
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 51
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn1_dp_CHINAGW
+  vpn-list vpn1
+   sequence 1
+    match
+     source-data-prefix-list      dpl_Zscaler_all
+     destination-data-prefix-list CNSites
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet public-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_Zscaler_ZEN
+    !
+    action accept
+     set
+      vpn       1
+      tloc-list tl_HKGW
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      spl_Teams_Meeting_Room
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     set
+      vpn       1
+      tloc-list tl_HKGW
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_Zscaler_all
+     destination-data-prefix-list CN07
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_Zscaler_all
+     destination-data-prefix-list CN05
+    !
+    action accept
+     set
+      local-tloc-list
+       color public-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 61
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 71
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn1_dp_CN25_CHINA-NozScaler
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-1261473331
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_Zscaler_HK_SG
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 21
+    match
+     destination-data-prefix-list dpl_Zscaler_ZEN
+    !
+    action accept
+     set
+      vpn       1
+      tloc-list tl_GZGW_HKGW
+     !
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_CN05
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_CHINA_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list dpl_CHINA_NoZscaler
+    !
+    action accept
+     count nat_-1261473331
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 61
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 71
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn1_dp_ChinaSouth_O365test
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_965649199
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_CN05
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_CHINA_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list dpl_CHINA_NoZscaler
+    !
+    action accept
+     count nat_965649199
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 51
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn1_dp_GZGWTEST
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 11
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 21
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn1_dp_LOCAL_EXIT
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_Zscaler_ZEN
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 21
+    match
+     destination-data-prefix-list dpl_ANY_PREFIXES
+    !
+    action accept
+     count nat_counter_788466199
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn1_dp_SGGWTEST
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_Zscaler_ZEN
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn1_vpn1_dp_CN20_CHINA-NozScaler
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_864102591
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_Zscaler_HK_SG
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 21
+    match
+     destination-data-prefix-list dpl_Zscaler_ZEN
+    !
+    action accept
+     set
+      vpn       1
+      tloc-list tl_CN20_GZGW_HKGW
+     !
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_CN05
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_CHINA_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list dpl_CHINA_NoZscaler
+    !
+    action accept
+     count nat_864102591
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 61
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 71
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_DP-INTRANET-TEST_VPN2_vpn1_DP-INTRANET-TEST_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_2062162529
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_SG03
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_2062162529
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_2062162529
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 61
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 71
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_DP-LOREAL-CFLOWD_1000eye_JP07_VPN2_vpn1_DP-LOREAL-CFLOWD_1000eye_JP07_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-779647987
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_HK07
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_-779647987
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 51
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_DP-LOREAL-CFLOWD_1000eye_VPN2_vpn1_DP-LOREAL-CFLOWD_1000eye_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_337875205
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_HK07
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_337875205
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 51
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 61
+    match
+     source-ip 0.0.0.0/0
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_337875206
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_DP-LOREAL-CFLOWD_Asia_DNS_1000eye_TW01_VPN2_vpn1_DP-LOREAL-CFLOWD_Asia_DNS_1000eye_TW01_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_177616152
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_DNS
+     destination-port             53
+     protocol                     17
+    !
+    action accept
+     count nat_177616152
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_177616152
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_SG03
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_177616152
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 71
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 81
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_177616153
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_DP-LOREAL-CFLOWD_Asia_DNS_1000eye_VPN2_vpn1_DP-LOREAL-CFLOWD_Asia_DNS_1000eye_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_965865863
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_DNS
+     destination-port             53
+     protocol                     17
+    !
+    action accept
+     count nat_965865863
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_965865863
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_SG03
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_965865863
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 71
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 81
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_DP-LOREAL-CFLOWD_DNS_61_VPN2_vpn1_DP-LOREAL-CFLOWD_DNS_61_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-66656493
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_DNS
+     destination-port             53
+     protocol                     17
+    !
+    action accept
+     count nat_-66656493
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_-66656493
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_SG03
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-66656493
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 71
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 81
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_DP-LOREAL-CFLOWD_Intranet_VPN2_vpn1_DP-LOREAL-CFLOWD_Intranet_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_311171056
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_SG03
+     !
+    !
+   !
+   sequence 21
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 31
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 41
+    match
+     source-ip 0.0.0.0/0
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_311171057
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     source-ip 0.0.0.0/0
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_DP-LOREAL-CFLOWD_Intranet_ZSCALER_VPN2_vpn1_DP-LOREAL-CFLOWD_Intranet_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_976481677
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_SG03
+     !
+    !
+   !
+   sequence 21
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 31
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 41
+    match
+     source-ip 0.0.0.0/0
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_DP-LOREAL-CFLOWD_VPN2_vpn1_DP-LOREAL-CFLOWD_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_1046130486
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_CN40
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 21
+    match
+     destination-data-prefix-list dpl_CN05
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color mpls gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_TOIP1
+     destination-data-prefix-list dpl_TOIP2
+    !
+    action accept
+     set
+      local-tloc-list
+       color mpls gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_1046130486
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_1046130487
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_DP-LOREAL-CFLOWD_VPN2_vpn1_SG03-DP-LOREAL-CFLOWD_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-777051034
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_-777051034
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-777051033
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_CN40_GD8_new_VPN2_vpn1_dp_CN40_GD8_new_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_msteams_631278393
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color public-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
+     destination-data-prefix-list dpl_MSTeams_TCP_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_msteams_tcp_631278393
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color public-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
+     destination-data-prefix-list dpl_MSExchange_PREFIXES
+     destination-port             143 25 443 587 80 993 995
+     protocol                     6
+    !
+    action accept
+     count nat_msexchange_631278393
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color public-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
+     destination-data-prefix-list dpl_MSSharePoint_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mssharepoint_631278393
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
+     destination-data-prefix-list dpl_MSCommonO365_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mscommono365_631278393
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color public-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dpl_GD8_Flows
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 61
+    match
+     destination-data-prefix-list dpl_Zscaler_ZEN
+    !
+    action accept
+     set
+      vpn       1
+      tloc-list tl_SHGW_HKGW
+     !
+    !
+   !
+   sequence 71
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 81
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_ANY_PREFIXES
+    !
+    action accept
+     count nat_631278394
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color    biz-internet bronze
+       encap    ipsec
+       restrict
+      !
+     !
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_IGW_CHINA_CN02_VPN2_vpn1_dp_IGW_CHINA_CN02_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-542208130
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_Zscaler_HK_SG
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 21
+    match
+     destination-data-prefix-list dpl_Zscaler_ZEN
+    !
+    action accept
+     set
+      vpn       1
+      tloc-list tl_SHGW_HKGW
+     !
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_CN05
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_CHINA_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list dpl_CHINA_NoZscaler
+    !
+    action accept
+     count nat_-542208130
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 61
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 71
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 81
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-542208129
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_IGW_CHINA_TEST_VPN2_vpn1_dp_CN50
+  vpn-list vpn1
+   sequence 1
+    match
+     source-data-prefix-list      spl_Teams_Meeting_Room
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     set
+      local-tloc-list
+       color mpls gold
+       encap ipsec
+      !
+      vpn       1
+      tloc-list tl_H2H_SHGW_GZGW
+     !
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_counter_379141604
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      CHINA-BR-VIP
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color mpls gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list CHINA-BR-VIP
+    !
+    action accept
+     count GD8-traffic_379141604
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color    custom1
+       encap    ipsec
+       restrict
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dpl_Zscaler_HK_SG
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     destination-data-prefix-list dpl_Zscaler_ZEN
+    !
+    action accept
+     set
+      vpn       1
+      tloc-list tl_SHGW_HKGW
+     !
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dpl_CHINA_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list dpl_CHINA_NoZscaler
+    !
+    action accept
+     count nat_379141604
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 91
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 101
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_IGW_CHINA_TEST_VPN2_vpn1_dp_IGW_CHINA_TEST
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_counter_-1418935235
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
+     destination-data-prefix-list dpl_MSTeams_TCP_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_msteams_tcp_-1418935235
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
+     destination-data-prefix-list dpl_MSExchange_PREFIXES
+     destination-port             143 25 443 587 80 993 995
+     protocol                     6
+    !
+    action accept
+     count nat_msexchange_-1418935235
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
+     destination-data-prefix-list dpl_MSSharePoint_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mssharepoint_-1418935235
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
+     destination-data-prefix-list dpl_MSCommonO365_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mscommono365_-1418935235
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     destination-data-prefix-list dpl_Zscaler_HK_SG
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 61
+    match
+     destination-data-prefix-list dpl_Zscaler_ZEN
+    !
+    action accept
+     set
+      vpn       1
+      tloc-list tl_SHGW_HKGW
+     !
+    !
+   !
+   sequence 71
+    match
+     destination-data-prefix-list dpl_CN05
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 81
+    match
+     destination-data-prefix-list dpl_CN50
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet public-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 91
+    match
+     source-data-prefix-list      dpl_CHINA_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 101
+    match
+     source-data-prefix-list dpl_CHINA_NoZscaler
+    !
+    action accept
+     count nat_counter_-1418935235
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 111
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 121
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 131
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_India_Sites_VPN2_vpn1_dp_India_Sites_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-1729405254
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-1729405254
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_-1729405254
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list dpl_ThousandEye
+    !
+    action accept
+     count nat_-1729405254
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 71
+    match
+     destination-data-prefix-list dpl_WEBSITES
+    !
+    action accept
+     count nat_-1729405254
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 91
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-ip 0.0.0.0/0
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_MERAKI_LAN_HK01_VPN2_vpn1_dp_MERAKI_LAN_HK01_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_1942230999
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 21
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_HK07
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_GRP_SRC_StepPlus
+     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+     destination-port             22
+     protocol                     6
+    !
+    action accept
+     count nat_1942230999
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_1942230999
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_1942230999
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 91
+    match
+     source-data-prefix-list dpl_ThousandEye
+    !
+    action accept
+     count nat_1942230999
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 101
+    match
+     destination-data-prefix-list dpl_NANDAGLOBAL
+    !
+    action accept
+     count nat_1942230999
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 111
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 121
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_MERAKI_LAN_INTRANET_TEST_VPN2_SC_VPN2_vpn1_dp_MERAKI_LAN_INTRANET_TEST_VPN2_SC_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-2010618594
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_SG03
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list dpl_SCCMserver
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet public-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_SCCMserver
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet public-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_GRP_SRC_StepPlus
+     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+     destination-port             22
+     protocol                     6
+    !
+    action accept
+     count nat_-2010618594
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-2010618594
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 81
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_-2010618594
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 91
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 101
+    match
+     source-data-prefix-list dpl_ThousandEye
+    !
+    action accept
+     count nat_-2010618594
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 111
+    match
+     destination-data-prefix-list dpl_NANDAGLOBAL
+    !
+    action accept
+     count nat_-2010618594
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 121
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 131
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_MERAKI_LAN_INTRANET_TEST_VPN2_vpn1_dp_MERAKI_LAN_INTRANET_TEST_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-607608847
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_SG03
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_-607608847
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_GRP_SRC_StepPlus
+     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+     destination-port             22
+     protocol                     6
+    !
+    action accept
+     count nat_-607608847
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-607608847
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 81
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_-607608847
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 91
+    match
+     destination-data-prefix-list dpl_NANDAGLOBAL
+    !
+    action accept
+     count nat_-607608847
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 101
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 111
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 121
+    match
+     source-ip 0.0.0.0/0
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_North_VPN2_vpn1_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_North_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_317220523
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_DNS
+     destination-port             53
+     protocol                     17
+    !
+    action accept
+     count nat_317220523
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_317220523
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_HK07
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dpl_GRP_SRC_StepPlus
+     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+     destination-port             22
+     protocol                     6
+    !
+    action accept
+     count nat_317220523
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_317220523
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 91
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_317220523
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 101
+    match
+     destination-data-prefix-list dpl_NANDAGLOBAL
+    !
+    action accept
+     count nat_317220523
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 111
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 121
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_317220524
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     source-ip 0.0.0.0/0
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_North_Zscaler_VPN2_vpn1_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_North_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_1941091259
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_DNS
+     destination-port             53
+     protocol                     17
+    !
+    action accept
+     count nat_1941091259
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_1941091259
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_HK07
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dpl_GRP_SRC_StepPlus
+     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+     destination-port             22
+     protocol                     6
+    !
+    action accept
+     count nat_1941091259
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_1941091259
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 91
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_1941091259
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 101
+    match
+     destination-data-prefix-list dpl_NANDAGLOBAL
+    !
+    action accept
+     count nat_1941091259
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 111
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 121
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_South_VPN2_vpn1_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_South_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-10814601
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_DNS
+     destination-port             53
+     protocol                     17
+    !
+    action accept
+     count nat_-10814601
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_SG03
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_GRP_SRC_StepPlus
+     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+     destination-port             22
+     protocol                     6
+    !
+    action accept
+     count nat_-10814601
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-10814601
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_-10814601
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 91
+    match
+     source-data-prefix-list dpl_ThousandEye
+    !
+    action accept
+     count nat_-10814601
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 101
+    match
+     destination-data-prefix-list dpl_NANDAGLOBAL
+    !
+    action accept
+     count nat_-10814601
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 111
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 121
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-10814600
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_MERAKI_LAN_KR05_VPN2_vpn1_dp_MERAKI_LAN_KR05_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_msteams_-1346330769
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_SG03
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_-1346330769
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_GRP_SRC_StepPlus
+     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+     destination-port             22
+     protocol                     6
+    !
+    action accept
+     count stepplus_-1346330769
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 51
+    match
+     destination-data-prefix-list dpl_WEBSITES
+    !
+    action accept
+     count nat_websites_-1346330769
+     nat use-vpn 0
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-1346330769
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     destination-data-prefix-list dpl_NANDAGLOBAL
+    !
+    action accept
+     count nat_-1346330769
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 91
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 101
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-1346330768
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_MERAKI_LAN_VPN2_vpn1_dp_MERAKI_LAN_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_1553831860
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_SG03
+     !
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_GRP_SRC_StepPlus
+     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+     destination-port             22
+     protocol                     6
+    !
+    action accept
+     count nat_1553831860
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_1553831860
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_1553831860
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 81
+    match
+     source-data-prefix-list dpl_ThousandEye
+    !
+    action accept
+     count nat_1553831860
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 91
+    match
+     destination-data-prefix-list dpl_NANDAGLOBAL
+    !
+    action accept
+     count nat_1553831860
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 101
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 111
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_1553831861
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_North_Asia_Sites_VPN2_vpn1_dp_North_Asia_Sites_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-24064383
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_DNS
+     destination-port             53
+     protocol                     17
+    !
+    action accept
+     count nat_-24064383
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
+    !
+    action accept
+     count nat_-24064383
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_HKDC_and_SGDC
+     !
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dpl_GRP_SRC_StepPlus
+     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+     destination-port             22
+     protocol                     6
+    !
+    action accept
+     count nat_-24064383
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-24064383
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 91
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_-24064383
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 101
+    match
+     destination-data-prefix-list dpl_WEBSITES
+    !
+    action accept
+     count nat_-24064383
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 111
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 121
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-24064382
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     source-ip 0.0.0.0/0
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_South_Asia_Sites_VPN2_vpn1_dp_South_Asia_Sites_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_-2066137306
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_MSTeams_TCP_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_msteams_tcp_-2066137306
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     destination-data-prefix-list dpl_MSExchange_PREFIXES
+     destination-port             143 25 443 587 80 993 995
+     protocol                     6
+    !
+    action accept
+     count nat_msexchange_-2066137306
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_MSSharePoint_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mssharepoint_-2066137306
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dpl_MSCommonO365_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mscommono365_-2066137306
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 51
+    match
+     destination-data-prefix-list dpl_DNS
+     destination-port             53
+     protocol                     17
+    !
+    action accept
+     count nat_-2066137306
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-2066137306
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 91
+    match
+     source-data-prefix-list      dpl_webex_source
+     destination-data-prefix-list dpl_webex_destination
+    !
+    action accept
+     count nat_-2066137306
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 101
+    match
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 111
+    match
+     source-data-prefix-list dpl_ThousandEye
+    !
+    action accept
+     count nat_-2066137306
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 121
+    match
+     destination-data-prefix-list dpl_WEBSITES
+    !
+    action accept
+     count nat_-2066137306
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 131
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 141
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-ip 0.0.0.0/0
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ app-route-policy _vpn1_arp_ALL_SPOKE_SITES
+  vpn-list vpn1
+   sequence 1
+    match
+     source-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_ASIA_VPN
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_CHINA_VPN
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_OA_PREFIXES
+     app-list                     FILE_SERVER
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 51
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   default-action sla-class SLA_INTERNET
+  !
+ !
+ app-route-policy _vpn1_arp_ALL_SPOKE_SITES_CEDGE
+  vpn-list vpn1
+   sequence 1
+    match
+     source-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_ASIA_VPN
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_Zscaler_HK_SG
+    !
+    action
+     count                      INT_-1412067039
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_CHINA_VPN
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_OA_PREFIXES
+     app-list                     FILE_SERVER
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 61
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 71
+    match
+     source-ip           0.0.0.0/0
+     cloud-saas-app-list office365_apps
+    !
+    action
+     count SAAS_-1412067039
+     cloud-saas
+    !
+   !
+   default-action sla-class SLA_INTERNET
+  !
+ !
+ app-route-policy _vpn1_arp_APAC_DC
+  vpn-list vpn1
+   sequence 1
+    match
+     source-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_ASIA_VPN
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_OA_PREFIXES
+     app-list                     FILE_SERVER
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   default-action sla-class SLA_INTERNET
+  !
+ !
+ app-route-policy _vpn1_arp_CHINA_GW
+  vpn-list vpn1
+   sequence 1
+    match
+     source-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_CHINA_VPN
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     count                      test_1357172488
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_OA_PREFIXES
+     app-list                     FILE_SERVER
+    !
+    action
+     count                      server_1357172488
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     count                      last_1357172488
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 51
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   default-action sla-class SLA_INTERNET
+  !
+ !
+ app-route-policy _vpn1_arp_ChinaSouth_o365test
+  vpn-list vpn1
+   sequence 1
+    match
+     source-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls bronze
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_ASIA_VPN
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_Zscaler_HK_SG
+    !
+    action
+     count                      INT_2028635289
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_CHINA_VPN
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_OA_PREFIXES
+     app-list                     FILE_SERVER
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 61
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   default-action sla-class SLA_INTERNET
+  !
+ !
+ app-route-policy _vpn1_arp_GZGWTEST
+  vpn-list vpn1
+   sequence 1
+    match
+     source-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_CHINA_VPN
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     count                      test_-295614461
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 31
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_OA_PREFIXES
+     app-list                     FILE_SERVER
+    !
+    action
+     count                      server_-295614461
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     count                      last_-295614461
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 51
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   default-action sla-class SLA_INTERNET
+  !
+ !
+ app-route-policy _vpn1_arp_IGW_TEST
+  vpn-list vpn1
+   sequence 1
+    match
+     source-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls bronze
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_SCCMserver
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 21
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_ASIA_VPN
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_Zscaler_HK_SG
+    !
+    action
+     count                      INT_-786922836
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 41
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_CHINA_VPN
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   sequence 51
+    match
+     source-data-prefix-list      dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_OA_PREFIXES
+     app-list                     FILE_SERVER
+    !
+    action
+     backup-sla-preferred-color mpls gold
+     sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
+    !
+   !
+   sequence 61
+    match
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action
+     backup-sla-preferred-color biz-internet public-internet bronze
+     sla-class SLA_MPLS preferred-color mpls gold
+    !
+   !
+   default-action sla-class SLA_INTERNET
+  !
+ !
+ cflowd-template LOREAL-CFLOWD_10-164-65-4
+  template-refresh 90
+  collector vpn 1 address 10.144.162.68 port 2055 transport transport_udp source-interface loopback1
+  collector vpn 1 address 10.164.65.4 port 2055 transport transport_udp source-interface loopback1
+ !
+ lists
+  vpn-list vpn1
+   vpn 1
+  !
+  vpn-list vpn2
+   vpn 2
+  !
+  data-prefix-list CHINA-BR-VIP
+   ip-prefix 10.242.36.251/32
+   ip-prefix 10.242.36.253/32
+  !
+  data-prefix-list CN05
+   ip-prefix 10.72.128.0/18
+  !
+  data-prefix-list CN07
+   ip-prefix 10.72.192.0/18
+  !
+  data-prefix-list CNSites
+   ip-prefix 10.72.64.0/18
+   ip-prefix 10.72.128.0/17
+   ip-prefix 10.242.0.0/15
+   ip-prefix 10.243.16.0/22
+   ip-prefix 10.243.24.0/22
+   ip-prefix 10.243.32.0/22
+   ip-prefix 10.243.36.0/22
+   ip-prefix 10.243.40.0/22
+   ip-prefix 10.243.44.0/22
+   ip-prefix 10.243.48.0/22
+   ip-prefix 10.243.52.0/22
+   ip-prefix 10.243.56.0/22
+   ip-prefix 10.243.60.0/22
+   ip-prefix 10.243.72.0/21
+   ip-prefix 10.243.84.0/22
+   ip-prefix 10.243.88.0/22
+   ip-prefix 10.243.93.0/24
+   ip-prefix 10.243.192.0/22
+  !
+  data-prefix-list dp_IntranetApps
+   ip-prefix 10.14.80.50/32
+   ip-prefix 10.72.64.47/32
+   ip-prefix 10.102.10.120/32
+   ip-prefix 10.112.20.85/32
+   ip-prefix 10.116.2.14/32
+   ip-prefix 10.118.3.133/32
+   ip-prefix 10.136.40.12/32
+   ip-prefix 10.139.40.65/32
+   ip-prefix 10.163.1.37/32
+   ip-prefix 10.164.6.229/32
+   ip-prefix 10.164.74.230/32
+   ip-prefix 10.170.0.168/32
+   ip-prefix 10.170.0.173/32
+   ip-prefix 10.170.1.22/32
+   ip-prefix 10.170.1.54/32
+   ip-prefix 10.170.1.57/32
+   ip-prefix 10.170.1.106/32
+   ip-prefix 10.170.1.117/32
+   ip-prefix 10.170.1.137/32
+  !
+  data-prefix-list dp_NoZscaler
+   ip-prefix 10.240.22.0/27
+   ip-prefix 10.240.26.0/26
+   ip-prefix 10.240.31.0/27
+   ip-prefix 10.240.36.128/25
+   ip-prefix 10.240.61.128/25
+   ip-prefix 10.240.67.128/27
+   ip-prefix 10.240.69.128/28
+   ip-prefix 10.240.71.96/27
+   ip-prefix 10.240.72.128/25
+   ip-prefix 10.240.81.128/26
+   ip-prefix 10.240.110.128/25
+   ip-prefix 10.240.119.192/26
+   ip-prefix 10.240.121.64/28
+   ip-prefix 10.240.134.0/25
+   ip-prefix 10.240.137.0/27
+   ip-prefix 10.240.183.64/28
+   ip-prefix 10.240.183.96/27
+   ip-prefix 10.240.193.0/27
+   ip-prefix 10.240.194.96/27
+   ip-prefix 10.240.195.128/28
+   ip-prefix 10.240.197.96/27
+   ip-prefix 10.240.199.0/26
+   ip-prefix 10.240.200.128/27
+   ip-prefix 10.240.221.0/27
+   ip-prefix 10.240.254.0/24
+   ip-prefix 10.241.10.0/25
+   ip-prefix 10.241.72.128/27
+   ip-prefix 10.241.119.96/27
+   ip-prefix 10.241.123.96/27
+   ip-prefix 10.241.131.0/27
+   ip-prefix 10.241.144.128/27
+   ip-prefix 10.243.195.0/27
+   ip-prefix 10.244.46.128/25
+   ip-prefix 10.244.73.0/27
+   ip-prefix 10.244.75.64/28
+   ip-prefix 10.244.79.0/27
+   ip-prefix 10.244.94.0/24
+   ip-prefix 10.244.96.0/27
+   ip-prefix 10.244.151.128/25
+   ip-prefix 10.244.159.64/26
+   ip-prefix 10.244.217.0/25
+   ip-prefix 10.245.51.0/24
+   ip-prefix 10.245.64.16/28
+   ip-prefix 192.168.48.0/21
+   ip-prefix 192.168.52.0/22
+   ip-prefix 192.168.56.0/21
+   ip-prefix 192.168.100.0/22
+   ip-prefix 192.168.104.0/22
+   ip-prefix 192.168.208.0/21
+   ip-prefix 192.168.216.0/21
+  !
+  data-prefix-list dpl_1000eyedestination
+   ip-prefix 103.237.132.218/32
+   ip-prefix 103.237.133.218/32
+   ip-prefix 103.241.105.218/32
+   ip-prefix 202.74.37.218/32
+  !
+  data-prefix-list dpl_ANY_PREFIXES
+   ip-prefix 0.0.0.0/1
+   ip-prefix 128.0.0.0/1
+  !
+  data-prefix-list dpl_ASIA_VPN
+   ip-prefix 10.96.0.0/17
+   ip-prefix 10.96.128.0/19
+   ip-prefix 10.96.160.0/19
+   ip-prefix 10.96.192.0/19
+   ip-prefix 10.96.224.0/19
+   ip-prefix 10.97.0.0/17
+   ip-prefix 10.97.128.0/21
+   ip-prefix 10.97.136.0/22
+   ip-prefix 10.97.140.0/22
+   ip-prefix 10.97.144.0/21
+  !
+  data-prefix-list dpl_CHINA_NoZscaler
+   ip-prefix 10.243.93.128/27
+   ip-prefix 10.243.195.0/27
+  !
+  data-prefix-list dpl_CHINA_VPN
+   ip-prefix 10.96.128.0/17
+   ip-prefix 10.97.136.0/21
+  !
+  data-prefix-list dpl_CN05
+   ip-prefix 10.72.139.115/32
+  !
+  data-prefix-list dpl_CN06_CN40_Teyes_Agents
+   ip-prefix 10.72.64.67/32
+   ip-prefix 10.243.160.12/32
+  !
+  data-prefix-list dpl_CN40
+   ip-prefix 10.243.128.0/18
+  !
+  data-prefix-list dpl_CN50
+   ip-prefix 10.102.32.10/32
+  !
+  data-prefix-list dpl_DNS
+   ip-prefix 1.1.1.1/32
+   ip-prefix 114.114.114.114/32
+  !
+  data-prefix-list dpl_GD8_Flows
+   ip-prefix 10.243.160.72/32
+   ip-prefix 10.243.160.73/32
+   ip-prefix 10.243.160.74/32
+   ip-prefix 10.243.160.75/32
+   ip-prefix 10.243.160.76/32
+   ip-prefix 10.243.160.77/32
+   ip-prefix 10.243.160.78/32
+  !
+  data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+   ip-prefix 213.212.105.219/32
+   ip-prefix 213.212.111.221/32
+  !
+  data-prefix-list dpl_GRP_SRC_StepPlus
+   ip-prefix 10.244.144.11/32
+  !
+  data-prefix-list dpl_MSCommonO365_PREFIXES
+   ip-prefix 13.107.6.171/32
+   ip-prefix 13.107.18.15/32
+   ip-prefix 13.107.140.6/32
+   ip-prefix 52.108.0.0/14
+   ip-prefix 52.238.106.116/32
+   ip-prefix 52.244.37.168/32
+   ip-prefix 52.244.203.72/32
+   ip-prefix 52.244.207.172/32
+   ip-prefix 52.244.223.198/32
+   ip-prefix 52.247.150.191/32
+  !
+  data-prefix-list dpl_MSExchange_PREFIXES
+   ip-prefix 13.107.6.152/31
+   ip-prefix 13.107.18.10/31
+   ip-prefix 13.107.128.0/22
+   ip-prefix 23.103.160.0/20
+   ip-prefix 40.92.0.0/15
+   ip-prefix 40.96.0.0/13
+   ip-prefix 40.104.0.0/15
+   ip-prefix 40.107.0.0/16
+   ip-prefix 52.96.0.0/14
+   ip-prefix 52.100.0.0/14
+   ip-prefix 52.238.78.88/32
+   ip-prefix 104.47.0.0/17
+   ip-prefix 131.253.33.215/32
+   ip-prefix 132.245.0.0/16
+   ip-prefix 150.171.32.0/22
+   ip-prefix 204.79.197.215/32
+  !
+  data-prefix-list dpl_MSSharePoint_PREFIXES
+   ip-prefix 13.107.136.0/22
+   ip-prefix 40.108.128.0/17
+   ip-prefix 52.104.0.0/14
+   ip-prefix 104.146.128.0/17
+   ip-prefix 150.171.40.0/22
+  !
+  data-prefix-list dpl_MSTeams_PREFIXES
+   ip-prefix 13.107.64.0/18
+   ip-prefix 52.112.0.0/14
+   ip-prefix 52.120.0.0/14
+  !
+  data-prefix-list dpl_MSTeams_TCP_PREFIXES
+   ip-prefix 52.238.119.141/32
+   ip-prefix 52.244.160.207/32
+  !
+  data-prefix-list dpl_NANDAGLOBAL
+   ip-prefix 183.111.100.13/32
+  !
+  data-prefix-list dpl_OA_PREFIXES
+   ip-prefix 10.0.0.0/8
+   ip-prefix 29.0.0.0/8
+   ip-prefix 30.0.0.0/8
+   ip-prefix 128.0.0.0/8
+   ip-prefix 161.241.0.0/16
+   ip-prefix 172.16.0.0/12
+   ip-prefix 192.6.0.0/16
+   ip-prefix 192.7.0.0/16
+   ip-prefix 192.8.0.0/16
+  !
+  data-prefix-list dpl_SCCMserver
+   ip-prefix 10.72.64.31/32
+   ip-prefix 10.72.144.61/32
+   ip-prefix 10.72.208.61/32
+   ip-prefix 10.77.80.61/32
+   ip-prefix 10.78.144.61/32
+   ip-prefix 10.102.10.202/32
+   ip-prefix 10.110.65.31/32
+   ip-prefix 10.110.65.32/32
+   ip-prefix 10.110.82.35/32
+   ip-prefix 10.111.101.2/32
+   ip-prefix 10.111.102.2/32
+   ip-prefix 10.118.65.21/32
+   ip-prefix 10.136.1.142/32
+   ip-prefix 10.136.228.201/32
+   ip-prefix 10.162.1.4/32
+   ip-prefix 10.164.63.6/32
+   ip-prefix 10.164.127.6/32
+   ip-prefix 10.165.63.5/32
+   ip-prefix 10.240.36.2/32
+   ip-prefix 10.240.59.25/32
+   ip-prefix 10.240.65.41/32
+   ip-prefix 10.240.72.11/32
+   ip-prefix 10.240.106.57/32
+   ip-prefix 10.240.117.21/32
+   ip-prefix 10.240.179.15/32
+   ip-prefix 10.240.228.15/32
+   ip-prefix 10.241.109.200/32
+   ip-prefix 10.241.113.135/32
+   ip-prefix 10.241.122.135/32
+   ip-prefix 10.243.21.14/32
+   ip-prefix 10.243.27.28/32
+   ip-prefix 10.243.39.5/32
+   ip-prefix 10.243.43.27/32
+   ip-prefix 10.243.47.27/32
+   ip-prefix 10.243.68.34/32
+   ip-prefix 10.243.79.27/32
+   ip-prefix 10.243.160.112/32
+   ip-prefix 10.244.92.42/32
+   ip-prefix 10.244.132.7/32
+   ip-prefix 10.244.148.10/32
+   ip-prefix 10.244.148.12/32
+   ip-prefix 10.244.214.23/32
+   ip-prefix 192.7.204.12/32
+  !
+  data-prefix-list dpl_TOIP1
+   ip-prefix 10.102.10.244/32
+   ip-prefix 10.102.10.247/32
+  !
+  data-prefix-list dpl_TOIP2
+   ip-prefix 10.243.160.18/32
+   ip-prefix 10.243.160.19/32
+  !
+  data-prefix-list dpl_ThousandEye
+   ip-prefix 10.72.64.67/32
+   ip-prefix 10.102.10.18/32
+   ip-prefix 10.104.4.30/32
+   ip-prefix 10.112.4.30/32
+   ip-prefix 10.240.59.83/32
+   ip-prefix 10.240.65.47/32
+   ip-prefix 10.240.72.24/32
+   ip-prefix 10.240.102.86/32
+   ip-prefix 10.240.179.19/32
+   ip-prefix 10.240.228.81/32
+   ip-prefix 10.241.0.10/32
+   ip-prefix 10.241.8.208/32
+   ip-prefix 10.241.109.30/32
+   ip-prefix 10.242.142.67/32
+   ip-prefix 10.243.160.12/32
+   ip-prefix 10.244.92.24/32
+   ip-prefix 10.244.132.50/32
+   ip-prefix 10.244.148.1/32
+   ip-prefix 10.244.214.250/32
+   ip-prefix 10.244.224.9/32
+   ip-prefix 10.244.231.117/32
+  !
+  data-prefix-list dpl_WEBSITES
+   ip-prefix 121.53.218.4/32
+   ip-prefix 183.111.100.13/32
+   ip-prefix 211.231.108.94/32
+  !
+  data-prefix-list dpl_Zscaler_HK_SG
+   ip-prefix 165.225.112.26/32
+   ip-prefix 165.225.116.26/32
+  !
+  data-prefix-list dpl_Zscaler_ZEN
+   ip-prefix 185.46.212.89/32
+   ip-prefix 185.46.212.90/32
+  !
+  data-prefix-list dpl_Zscaler_all
+   ip-prefix 165.225.112.26/32
+   ip-prefix 165.225.116.26/32
+   ip-prefix 185.46.212.89/32
+   ip-prefix 185.46.212.90/32
+  !
+  data-prefix-list dpl_webex_destination
+   ip-prefix 3.22.157.0/26
+   ip-prefix 3.25.56.0/25
+   ip-prefix 3.101.70.0/25
+   ip-prefix 3.101.71.0/24
+   ip-prefix 3.101.77.128/28
+   ip-prefix 3.235.73.128/25
+   ip-prefix 3.235.80.0/23
+   ip-prefix 3.235.122.0/24
+   ip-prefix 3.235.123.0/25
+   ip-prefix 18.132.77.0/25
+   ip-prefix 18.141.157.0/25
+   ip-prefix 18.181.18.0/25
+   ip-prefix 18.181.178.128/25
+   ip-prefix 18.181.204.0/25
+   ip-prefix 18.230.160.0/25
+   ip-prefix 20.50.235.0/24
+   ip-prefix 20.53.87.0/24
+   ip-prefix 40.119.234.0/24
+   ip-prefix 44.234.52.192/26
+   ip-prefix 52.232.210.0/24
+   ip-prefix 62.109.192.0/18
+   ip-prefix 64.68.96.0/19
+   ip-prefix 66.114.160.0/20
+   ip-prefix 66.163.32.0/19
+   ip-prefix 69.26.160.0/19
+   ip-prefix 114.29.192.0/19
+   ip-prefix 150.253.128.0/17
+   ip-prefix 170.72.0.0/16
+   ip-prefix 170.133.128.0/18
+   ip-prefix 173.39.224.0/19
+   ip-prefix 173.243.0.0/20
+   ip-prefix 207.182.160.0/19
+   ip-prefix 209.197.192.0/19
+   ip-prefix 210.4.192.0/20
+   ip-prefix 216.151.128.0/19
+  !
+  data-prefix-list dpl_webex_source
+   ip-prefix 10.240.39.32/28
+   ip-prefix 10.240.116.0/28
+   ip-prefix 10.240.228.81/32
+   ip-prefix 10.240.255.112/28
+  !
+  data-prefix-list spl_Teams_Meeting_Room
+   ip-prefix 10.242.26.51/32
+  !
+  tloc-list tl_CHINADC
+   tloc 10.218.32.31 color mpls encap ipsec preference 240
+   tloc 10.218.32.31 color biz-internet encap ipsec preference 240
+   tloc 10.218.32.31 color gold encap ipsec preference 240
+   tloc 10.218.32.31 color bronze encap ipsec preference 240
+   tloc 10.218.32.32 color mpls encap ipsec preference 220
+   tloc 10.218.32.32 color biz-internet encap ipsec preference 220
+   tloc 10.218.32.32 color gold encap ipsec preference 220
+   tloc 10.218.32.32 color bronze encap ipsec preference 220
+  !
+  tloc-list tl_CHINADC_PREFCN3B02
+   tloc 10.218.32.31 color mpls encap ipsec preference 220
+   tloc 10.218.32.31 color biz-internet encap ipsec preference 220
+   tloc 10.218.32.31 color gold encap ipsec preference 220
+   tloc 10.218.32.31 color bronze encap ipsec preference 220
+   tloc 10.218.32.32 color mpls encap ipsec preference 240
+   tloc 10.218.32.32 color biz-internet encap ipsec preference 240
+   tloc 10.218.32.32 color gold encap ipsec preference 240
+   tloc 10.218.32.32 color bronze encap ipsec preference 240
+  !
+  tloc-list tl_CN20_GZGW_HKGW
+   tloc 10.218.32.30 color biz-internet encap ipsec preference 200
+   tloc 10.218.32.30 color public-internet encap ipsec preference 200
+   tloc 10.218.32.36 color biz-internet encap ipsec preference 100
+   tloc 10.218.32.36 color public-internet encap ipsec preference 100
+  !
+  tloc-list tl_GZGWTEST
+   tloc 10.99.201.1 color mpls encap ipsec preference 200
+   tloc 10.99.201.1 color gold encap ipsec preference 200
+  !
+  tloc-list tl_GZGWTEST_SHGW
+   tloc 10.99.201.1 color mpls encap ipsec preference 200
+   tloc 10.99.201.1 color biz-internet encap ipsec preference 200
+   tloc 10.99.201.1 color public-internet encap ipsec preference 200
+   tloc 10.218.32.30 color mpls encap ipsec preference 180
+   tloc 10.218.32.30 color biz-internet encap ipsec preference 180
+   tloc 10.218.32.30 color public-internet encap ipsec preference 180
+  !
+  tloc-list tl_GZGW_HKGW
+   tloc 10.218.32.30 color biz-internet encap ipsec preference 100
+   tloc 10.218.32.30 color public-internet encap ipsec preference 100
+   tloc 10.218.32.36 color biz-internet encap ipsec preference 200
+   tloc 10.218.32.36 color public-internet encap ipsec preference 200
+  !
+  tloc-list tl_GZGW_SHGW
+   tloc 10.218.32.30 color mpls encap ipsec preference 180
+   tloc 10.218.32.30 color biz-internet encap ipsec preference 180
+   tloc 10.218.32.30 color public-internet encap ipsec preference 180
+   tloc 10.218.32.36 color mpls encap ipsec preference 200
+   tloc 10.218.32.36 color biz-internet encap ipsec preference 200
+   tloc 10.218.32.36 color public-internet encap ipsec preference 200
+  !
+  tloc-list tl_H2H_GZGWTEST_SHGW
+   tloc 10.99.201.1 color mpls encap ipsec preference 200
+   tloc 10.218.32.30 color mpls encap ipsec preference 180
+  !
+  tloc-list tl_H2H_GZGW_SHGW
+   tloc 10.218.32.30 color mpls encap ipsec preference 180
+   tloc 10.218.32.36 color mpls encap ipsec preference 200
+  !
+  tloc-list tl_H2H_HKDC_GZGW
+   tloc 10.218.32.3 color mpls encap ipsec preference 180
+   tloc 10.218.32.3 color gold encap ipsec preference 180
+   tloc 10.218.32.4 color mpls encap ipsec preference 201
+   tloc 10.218.32.4 color gold encap ipsec preference 201
+   tloc 10.218.32.36 color biz-internet encap ipsec preference 100
+   tloc 10.218.32.36 color public-internet encap ipsec preference 100
+  !
+  tloc-list tl_H2H_HKDC_SGDC
+   tloc 10.218.32.1 color mpls encap ipsec preference 150
+   tloc 10.218.32.1 color gold encap ipsec preference 150
+   tloc 10.218.32.2 color mpls encap ipsec preference 130
+   tloc 10.218.32.2 color gold encap ipsec preference 130
+   tloc 10.218.32.3 color mpls encap ipsec preference 200
+   tloc 10.218.32.3 color gold encap ipsec preference 200
+   tloc 10.218.32.4 color mpls encap ipsec preference 180
+   tloc 10.218.32.4 color gold encap ipsec preference 180
+  !
+  tloc-list tl_H2H_HKDC_SGDC_GZGW
+   tloc 10.218.32.1 color mpls encap ipsec preference 150
+   tloc 10.218.32.1 color gold encap ipsec preference 150
+   tloc 10.218.32.2 color mpls encap ipsec preference 130
+   tloc 10.218.32.2 color gold encap ipsec preference 130
+   tloc 10.218.32.3 color mpls encap ipsec preference 180
+   tloc 10.218.32.3 color gold encap ipsec preference 180
+   tloc 10.218.32.4 color mpls encap ipsec preference 201
+   tloc 10.218.32.4 color gold encap ipsec preference 201
+   tloc 10.218.32.36 color biz-internet encap ipsec preference 100
+   tloc 10.218.32.36 color public-internet encap ipsec preference 100
+  !
+  tloc-list tl_H2H_HKDC_SGDC_SHGW
+   tloc 10.218.32.1 color mpls encap ipsec preference 150
+   tloc 10.218.32.1 color gold encap ipsec preference 150
+   tloc 10.218.32.2 color mpls encap ipsec preference 130
+   tloc 10.218.32.2 color gold encap ipsec preference 130
+   tloc 10.218.32.3 color mpls encap ipsec preference 200
+   tloc 10.218.32.3 color gold encap ipsec preference 200
+   tloc 10.218.32.4 color mpls encap ipsec preference 180
+   tloc 10.218.32.4 color gold encap ipsec preference 180
+   tloc 10.218.32.30 color biz-internet encap ipsec preference 100
+   tloc 10.218.32.30 color public-internet encap ipsec preference 100
+  !
+  tloc-list tl_H2H_HKDC_SHGW
+   tloc 10.218.32.3 color mpls encap ipsec preference 200
+   tloc 10.218.32.3 color gold encap ipsec preference 200
+   tloc 10.218.32.4 color mpls encap ipsec preference 180
+   tloc 10.218.32.4 color gold encap ipsec preference 180
+   tloc 10.218.32.30 color biz-internet encap ipsec preference 100
+   tloc 10.218.32.30 color public-internet encap ipsec preference 100
+  !
+  tloc-list tl_H2H_SGDC_GZGW
+   tloc 10.218.32.1 color mpls encap ipsec preference 200
+   tloc 10.218.32.1 color gold encap ipsec preference 200
+   tloc 10.218.32.2 color mpls encap ipsec preference 180
+   tloc 10.218.32.2 color gold encap ipsec preference 180
+   tloc 10.218.32.36 color biz-internet encap ipsec preference 100
+   tloc 10.218.32.36 color public-internet encap ipsec preference 100
+  !
+  tloc-list tl_H2H_SGDC_HKDC
+   tloc 10.218.32.1 color mpls encap ipsec preference 200
+   tloc 10.218.32.1 color gold encap ipsec preference 200
+   tloc 10.218.32.2 color mpls encap ipsec preference 180
+   tloc 10.218.32.2 color gold encap ipsec preference 180
+   tloc 10.218.32.3 color mpls encap ipsec preference 150
+   tloc 10.218.32.3 color gold encap ipsec preference 150
+   tloc 10.218.32.4 color mpls encap ipsec preference 130
+   tloc 10.218.32.4 color gold encap ipsec preference 130
+  !
+  tloc-list tl_H2H_SGDC_HKDC_GZGW
+   tloc 10.218.32.1 color mpls encap ipsec preference 200
+   tloc 10.218.32.1 color gold encap ipsec preference 200
+   tloc 10.218.32.2 color mpls encap ipsec preference 180
+   tloc 10.218.32.2 color gold encap ipsec preference 180
+   tloc 10.218.32.3 color mpls encap ipsec preference 150
+   tloc 10.218.32.3 color gold encap ipsec preference 150
+   tloc 10.218.32.4 color mpls encap ipsec preference 130
+   tloc 10.218.32.4 color gold encap ipsec preference 130
+   tloc 10.218.32.36 color biz-internet encap ipsec preference 100
+   tloc 10.218.32.36 color public-internet encap ipsec preference 100
+  !
+  tloc-list tl_H2H_SGDC_HKDC_SHGW
+   tloc 10.218.32.1 color mpls encap ipsec preference 200
+   tloc 10.218.32.1 color gold encap ipsec preference 200
+   tloc 10.218.32.2 color mpls encap ipsec preference 180
+   tloc 10.218.32.2 color gold encap ipsec preference 180
+   tloc 10.218.32.3 color mpls encap ipsec preference 150
+   tloc 10.218.32.3 color gold encap ipsec preference 150
+   tloc 10.218.32.4 color mpls encap ipsec preference 130
+   tloc 10.218.32.4 color gold encap ipsec preference 130
+   tloc 10.218.32.30 color biz-internet encap ipsec preference 100
+   tloc 10.218.32.30 color public-internet encap ipsec preference 100
+  !
+  tloc-list tl_H2H_SGDC_SHGW
+   tloc 10.218.32.1 color mpls encap ipsec preference 200
+   tloc 10.218.32.1 color gold encap ipsec preference 200
+   tloc 10.218.32.2 color mpls encap ipsec preference 180
+   tloc 10.218.32.2 color gold encap ipsec preference 180
+   tloc 10.218.32.30 color biz-internet encap ipsec preference 100
+   tloc 10.218.32.30 color public-internet encap ipsec preference 100
+  !
+  tloc-list tl_H2H_SHGW
+   tloc 10.218.32.30 color mpls encap ipsec preference 200
+  !
+  tloc-list tl_H2H_SHGW_GZGW
+   tloc 10.218.32.30 color mpls encap ipsec preference 200
+   tloc 10.218.32.36 color mpls encap ipsec preference 180
+  !
+  tloc-list tl_HK07
+   tloc 10.218.32.3 color mpls encap ipsec preference 0
+   tloc 10.218.32.3 color biz-internet encap ipsec preference 0
+   tloc 10.218.32.3 color gold encap ipsec preference 0
+   tloc 10.218.32.3 color bronze encap ipsec preference 0
+   tloc 10.218.32.4 color mpls encap ipsec preference 0
+   tloc 10.218.32.4 color biz-internet encap ipsec preference 0
+   tloc 10.218.32.4 color gold encap ipsec preference 0
+   tloc 10.218.32.4 color bronze encap ipsec preference 0
+  !
+  tloc-list tl_HKDC_02_prefer_and_SGDC
+   tloc 10.218.32.1 color mpls encap ipsec preference 150
+   tloc 10.218.32.1 color biz-internet encap ipsec preference 150
+   tloc 10.218.32.1 color gold encap ipsec preference 150
+   tloc 10.218.32.1 color bronze encap ipsec preference 150
+   tloc 10.218.32.2 color mpls encap ipsec preference 130
+   tloc 10.218.32.2 color biz-internet encap ipsec preference 130
+   tloc 10.218.32.2 color gold encap ipsec preference 130
+   tloc 10.218.32.2 color bronze encap ipsec preference 130
+   tloc 10.218.32.3 color mpls encap ipsec preference 180
+   tloc 10.218.32.3 color biz-internet encap ipsec preference 180
+   tloc 10.218.32.3 color gold encap ipsec preference 180
+   tloc 10.218.32.3 color bronze encap ipsec preference 180
+   tloc 10.218.32.4 color mpls encap ipsec preference 201
+   tloc 10.218.32.4 color biz-internet encap ipsec preference 201
+   tloc 10.218.32.4 color gold encap ipsec preference 201
+   tloc 10.218.32.4 color bronze encap ipsec preference 201
+  !
+  tloc-list tl_HKDC_and_SGDC
+   tloc 10.218.32.1 color mpls encap ipsec preference 150
+   tloc 10.218.32.1 color biz-internet encap ipsec preference 150
+   tloc 10.218.32.1 color gold encap ipsec preference 150
+   tloc 10.218.32.1 color bronze encap ipsec preference 150
+   tloc 10.218.32.2 color mpls encap ipsec preference 150
+   tloc 10.218.32.2 color biz-internet encap ipsec preference 150
+   tloc 10.218.32.2 color gold encap ipsec preference 150
+   tloc 10.218.32.2 color bronze encap ipsec preference 150
+   tloc 10.218.32.3 color mpls encap ipsec preference 200
+   tloc 10.218.32.3 color biz-internet encap ipsec preference 200
+   tloc 10.218.32.3 color gold encap ipsec preference 200
+   tloc 10.218.32.3 color bronze encap ipsec preference 200
+   tloc 10.218.32.4 color mpls encap ipsec preference 200
+   tloc 10.218.32.4 color biz-internet encap ipsec preference 200
+   tloc 10.218.32.4 color gold encap ipsec preference 200
+   tloc 10.218.32.4 color bronze encap ipsec preference 200
+  !
+  tloc-list tl_HKDC_and_SGDC_PREFHKDC
+   tloc 10.218.32.1 color mpls encap ipsec preference 150
+   tloc 10.218.32.1 color biz-internet encap ipsec preference 150
+   tloc 10.218.32.1 color gold encap ipsec preference 150
+   tloc 10.218.32.1 color bronze encap ipsec preference 150
+   tloc 10.218.32.2 color mpls encap ipsec preference 130
+   tloc 10.218.32.2 color biz-internet encap ipsec preference 130
+   tloc 10.218.32.2 color gold encap ipsec preference 130
+   tloc 10.218.32.2 color bronze encap ipsec preference 130
+   tloc 10.218.32.3 color mpls encap ipsec preference 240
+   tloc 10.218.32.3 color biz-internet encap ipsec preference 240
+   tloc 10.218.32.3 color gold encap ipsec preference 240
+   tloc 10.218.32.3 color bronze encap ipsec preference 240
+   tloc 10.218.32.4 color mpls encap ipsec preference 220
+   tloc 10.218.32.4 color biz-internet encap ipsec preference 220
+   tloc 10.218.32.4 color gold encap ipsec preference 220
+   tloc 10.218.32.4 color bronze encap ipsec preference 220
+  !
+  tloc-list tl_HKGW
+   tloc 10.218.32.105 color mpls encap ipsec preference 200
+   tloc 10.218.32.106 color mpls encap ipsec preference 150
+  !
+  tloc-list tl_SG03
+   tloc 10.218.32.1 color mpls encap ipsec preference 0
+   tloc 10.218.32.1 color biz-internet encap ipsec preference 0
+   tloc 10.218.32.1 color gold encap ipsec preference 0
+   tloc 10.218.32.1 color bronze encap ipsec preference 0
+   tloc 10.218.32.2 color mpls encap ipsec preference 0
+   tloc 10.218.32.2 color biz-internet encap ipsec preference 0
+   tloc 10.218.32.2 color gold encap ipsec preference 0
+   tloc 10.218.32.2 color bronze encap ipsec preference 0
+  !
+  tloc-list tl_SGDC_and_HKDC
+   tloc 10.218.32.1 color mpls encap ipsec preference 200
+   tloc 10.218.32.1 color biz-internet encap ipsec preference 200
+   tloc 10.218.32.1 color gold encap ipsec preference 200
+   tloc 10.218.32.1 color bronze encap ipsec preference 200
+   tloc 10.218.32.2 color mpls encap ipsec preference 200
+   tloc 10.218.32.2 color biz-internet encap ipsec preference 200
+   tloc 10.218.32.2 color gold encap ipsec preference 200
+   tloc 10.218.32.2 color bronze encap ipsec preference 200
+   tloc 10.218.32.3 color mpls encap ipsec preference 150
+   tloc 10.218.32.3 color biz-internet encap ipsec preference 150
+   tloc 10.218.32.3 color gold encap ipsec preference 150
+   tloc 10.218.32.3 color bronze encap ipsec preference 150
+   tloc 10.218.32.4 color mpls encap ipsec preference 150
+   tloc 10.218.32.4 color biz-internet encap ipsec preference 150
+   tloc 10.218.32.4 color gold encap ipsec preference 150
+   tloc 10.218.32.4 color bronze encap ipsec preference 150
+  !
+  tloc-list tl_SHGW_GZGW
+   tloc 10.218.32.30 color mpls encap ipsec preference 200
+   tloc 10.218.32.30 color biz-internet encap ipsec preference 200
+   tloc 10.218.32.30 color public-internet encap ipsec preference 200
+   tloc 10.218.32.36 color mpls encap ipsec preference 180
+   tloc 10.218.32.36 color biz-internet encap ipsec preference 180
+   tloc 10.218.32.36 color public-internet encap ipsec preference 180
+  !
+  tloc-list tl_SHGW_HKGW
+   tloc 10.218.32.30 color biz-internet encap ipsec preference 0
+   tloc 10.218.32.30 color bronze encap ipsec preference 0
+  !
+  app-list FILE_SERVER
+   app-family file-server
+   app-family file_server
+   app-family network_service
+  !
+  app-list office365_apps
+   app excel_online
+   app groove
+   app hockeyapp
+   app live_groups
+   app live_hotmail
+   app live_mesh
+   app livemail_mobile
+   app lync
+   app lync_online
+   app microsoft
+   app ms-live-accounts
+   app ms-lync
+   app ms-lync-audio
+   app ms-lync-control
+   app ms-lync-video
+   app ms-office-365
+   app ms-office-web-apps
+   app ms-services
+   app ms-teams
+   app ms-teams-audio
+   app ms-teams-media
+   app ms-teams-video
+   app ms-update
+   app ms_communicator
+   app ms_onenote
+   app ms_planner
+   app ms_sway
+   app ms_teams
+   app ms_translator
+   app office365
+   app office_docs
+   app onedrive
+   app outlook
+   app outlook-web-service
+   app owa
+   app powerpoint_online
+   app share-point
+   app sharepoint
+   app sharepoint_admin
+   app sharepoint_blog
+   app sharepoint_calendar
+   app sharepoint_document
+   app sharepoint_online
+   app skydrive
+   app skydrive_login
+   app skype
+   app windows_marketplace
+   app windowslive
+   app word_online
+   app yammer
+  !
+  color-list cl_CN50_GD8
+   color custom1
+  !
+  color-list cl_INTERNET_COLORS
+   color biz-internet
+   color public-internet
+   color bronze
+  !
+  site-list ALL-SITES
+   site-id 20613101-20613103
+   site-id 20613106-20613109
+   site-id 20613111-20613199
+   site-id 20662402
+   site-id 20861101-20861104
+   site-id 20861108-20861113
+   site-id 20861141-20861199
+   site-id 20862354-20862407
+   site-id 20862418-20863199
+   site-id 20863200-20863299
+   site-id 20863341
+  !
+  site-list HK01
+   site-id 22222288
+  !
+  site-list JP02_1000eye
+   site-id 22222233
+  !
+  site-list JP07_1000eye_VPN2_Zscaler
+   site-id 22222222
+  !
+  site-list NozScaler_sites
+   site-id 20612103-20612199
+   site-id 20822101
+   site-id 20822103-20822104
+   site-id 20822107-20822199
+  !
+  site-list TH01_DNS_61
+   site-id 20662222
+  !
+  site-list TW01_DNS_1000eye
+   site-id 22222266
+  !
+  site-list TW01_ID01_DNS_1000eye
+   site-id 20622222
+  !
+  site-list dp_KR05
+   site-id 22222255
+  !
+  site-list dp_WEBEX
+   site-id 20613206
+   site-id 20613309
+  !
+  site-list sl_AAR_ALL_SPOKE_SITES
+   site-id 20602302-20602399
+   site-id 20610201-20610299
+   site-id 20612101-20612199
+   site-id 20613101-20613199
+   site-id 20613203
+   site-id 20613206
+   site-id 20613208
+   site-id 20613309
+   site-id 20622101-20622199
+   site-id 20622304
+   site-id 20622306
+   site-id 20642101-20642102
+   site-id 20643303
+   site-id 20652104
+   site-id 20652301
+   site-id 20652305
+   site-id 20653201-20653299
+   site-id 20653308
+   site-id 20662302
+   site-id 20662402
+   site-id 20812405
+   site-id 20822101-20822104
+   site-id 20822106-20822199
+   site-id 20822201
+   site-id 20822303
+   site-id 20842201
+   site-id 20860001
+   site-id 20861114
+   site-id 20862312
+   site-id 20862413-20862424
+   site-id 20863200-20863299
+   site-id 20863341-20863352
+   site-id 20910201-20910299
+   site-id 20912334
+   site-id 20913157
+   site-id 28803101
+   site-id 28803102-28803199
+  !
+  site-list sl_AAR_IGW_TEST
+   site-id 20861105-20861107
+   site-id 20861125
+   site-id 20861140
+   site-id 20862102
+   site-id 20862132
+   site-id 20862150
+   site-id 20862231
+   site-id 20862233-20862234
+   site-id 20862241
+   site-id 20862309
+   site-id 20862310
+   site-id 20862313
+   site-id 20862320
+   site-id 20862324
+   site-id 20862331
+   site-id 20862332
+   site-id 20862333-20862334
+   site-id 20862338
+   site-id 20862341
+   site-id 20862351
+   site-id 20862353
+   site-id 20862408
+   site-id 20862409
+   site-id 20862410
+   site-id 20862412
+   site-id 20863315
+  !
+  site-list sl_AAR_SAAS
+   site-id 20602301
+   site-id 20621103
+   site-id 20622301
+   site-id 20632201
+   site-id 20632204
+   site-id 20632304
+   site-id 20662301
+   site-id 20812201-20812202
+   site-id 20812207
+   site-id 20812315
+   site-id 20822105
+   site-id 20843302
+   site-id 20911103-20911133
+   site-id 20912103-20912104
+   site-id 20912207-20912209
+   site-id 20912211
+   site-id 20912214
+   site-id 20912216
+   site-id 20912218
+   site-id 20912223
+   site-id 20912226
+   site-id 20912229
+   site-id 20912231
+   site-id 20912232
+   site-id 20912251
+   site-id 20912253
+   site-id 20912306
+   site-id 20912317
+   site-id 20912339
+   site-id 20912358
+   site-id 20912430
+   site-id 20912439
+   site-id 20913211-20913251
+   site-id 28522301
+   site-id 28523311
+   site-id 28862301
+   site-id 28862305
+   site-id 28863302-28863303
+  !
+  site-list sl_APAC_DC
+   site-id 20650001
+   site-id 28520001
+  !
+  site-list sl_APAC_Sites
+   site-id 20602301-20602399
+   site-id 20610201-20610299
+   site-id 20612101-20612199
+   site-id 20613101-20613199
+   site-id 20613203
+   site-id 20613206
+   site-id 20613208
+   site-id 20613309
+   site-id 20621103
+   site-id 20622101-20622199
+   site-id 20622301
+   site-id 20622304
+   site-id 20622306
+   site-id 20632201
+   site-id 20632204
+   site-id 20632304
+   site-id 20642101-20642102
+   site-id 20643303
+   site-id 20652104
+   site-id 20652301
+   site-id 20652305
+   site-id 20653201-20653299
+   site-id 20653308
+   site-id 20662301-20662302
+   site-id 20662402
+   site-id 20812201-20812202
+   site-id 20812207
+   site-id 20812315
+   site-id 20812405
+   site-id 20822101-20822199
+   site-id 20822201
+   site-id 20822303
+   site-id 20842201
+   site-id 20843302
+   site-id 20910201-20910299
+   site-id 20911103-20911133
+   site-id 20912103-20912104
+   site-id 20912207-20912209
+   site-id 20912211
+   site-id 20912214
+   site-id 20912216
+   site-id 20912218
+   site-id 20912223
+   site-id 20912226
+   site-id 20912229
+   site-id 20912231
+   site-id 20912232
+   site-id 20912251
+   site-id 20912253
+   site-id 20912306
+   site-id 20912317
+   site-id 20912334
+   site-id 20912339
+   site-id 20912358
+   site-id 20912430
+   site-id 20912439
+   site-id 20913157
+   site-id 20913211-20913251
+   site-id 28522301
+   site-id 28523311
+   site-id 28803101-28803199
+   site-id 28862301
+   site-id 28862305
+   site-id 28863302-28863303
+  !
+  site-list sl_ASIA_NORTH_Sites
+   site-id 20632201
+   site-id 20632204
+   site-id 20632304
+   site-id 20812201-20812202
+   site-id 20812207
+   site-id 20812315
+   site-id 20812405
+   site-id 20822101-20822199
+   site-id 20822201
+   site-id 20822303
+   site-id 20842201
+   site-id 28522301
+   site-id 28523311
+   site-id 28862301
+   site-id 28862305
+   site-id 28863302-28863303
+  !
+  site-list sl_ASIA_SOUTH_Sites
+   site-id 20602301-20602399
+   site-id 20610201-20610299
+   site-id 20612101-20612199
+   site-id 20613101-20613199
+   site-id 20613203
+   site-id 20613206
+   site-id 20613208
+   site-id 20613309
+   site-id 20621103
+   site-id 20622101-20622199
+   site-id 20622301
+   site-id 20622304
+   site-id 20622306
+   site-id 20642101-20642102
+   site-id 20643303
+   site-id 20652104
+   site-id 20652301
+   site-id 20652305
+   site-id 20653201-20653299
+   site-id 20653308
+   site-id 20662301-20662302
+   site-id 20662402
+   site-id 20843302
+   site-id 28803102-28803199
+  !
+  site-list sl_CHINADC
+   site-id 20860001
+  !
+  site-list sl_CHINAGW
+   site-id 20869901
+   site-id 20869902
+  !
+  site-list sl_CHINA_NORTH_Sites
+   site-id 20861105
+   site-id 20861106
+   site-id 20861107
+   site-id 20861140
+   site-id 20862102
+   site-id 20862150
+   site-id 20862231
+   site-id 20862233-20862234
+   site-id 20862241
+   site-id 20862310
+   site-id 20862312-20862314
+   site-id 20862324
+   site-id 20862331
+   site-id 20862333-20862334
+   site-id 20862338
+   site-id 20862341
+   site-id 20862351
+   site-id 20862408
+   site-id 20862410
+   site-id 20862412
+   site-id 20863200-20863299
+   site-id 20863315
+   site-id 20863341-20863352
+  !
+  site-list sl_CHINA_NoZscaler
+   site-id 20862312
+   site-id 20862413-20862416
+   site-id 20863352
+  !
+  site-list sl_CHINA_SOUTH_Sites
+   site-id 20861114
+   site-id 20861125
+   site-id 20862132
+   site-id 20862309
+   site-id 20862320
+   site-id 20862332
+   site-id 20862353
+   site-id 20862409
+   site-id 20862417
+  !
+  site-list sl_CHINA_Sites
+   site-id 20861101-20861199
+   site-id 20862101-20862199
+   site-id 20862231-20862241
+   site-id 20862301-20862399
+   site-id 20862400-20862499
+   site-id 20863200-20863299
+   site-id 20863315
+   site-id 20863341-20863352
+  !
+  site-list sl_CHINA_o365test
+   site-id 2222
+  !
+  site-list sl_CN20_HKGW_TEST
+   site-id 20862320
+  !
+  site-list sl_CN25_HKGW_TEST
+   site-id 20861114
+   site-id 20861125
+   site-id 20862132
+   site-id 20862309
+   site-id 20862332
+   site-id 20862409
+   site-id 20862417
+  !
+  site-list sl_CN40
+   site-id 20861140
+  !
+  site-list sl_CN50
+   site-id 20862150
+  !
+  site-list sl_COR_DP_Intra_DNS_North_Zscale
+   site-id 22222277
+  !
+  site-list sl_COR_DP_Intranet_DNS_North
+   site-id 22222244
+  !
+  site-list sl_COR_DP_Intranet_DNS_South
+   site-id 20666222
+  !
+  site-list sl_COR_DP_Intranet_VRF2Zscalar
+   site-id 20200000
+  !
+  site-list sl_CloudonRamp
+   site-id 20652104
+   site-id 20911103-20911132
+   site-id 20913228-20913250
+  !
+  site-list sl_CloudonRamp_DP_Intranet
+   site-id 23333332
+  !
+  site-list sl_CloudonRamp_Meraki
+   site-id 20912253
+  !
+  site-list sl_CloudonRamp_Meraki_VPN2
+   site-id 22222299
+  !
+  site-list sl_DP_CHINA_IGW_CN02
+   site-id 20862102
+  !
+  site-list sl_DP_CHINA_IGW_TEST
+   site-id 20861105-20861107
+   site-id 20862231
+   site-id 20862233-20862234
+   site-id 20862241
+   site-id 20862310
+   site-id 20862313
+   site-id 20862324
+   site-id 20862331
+   site-id 20862333-20862334
+   site-id 20862338
+   site-id 20862341
+   site-id 20862351
+   site-id 20862353
+   site-id 20862408
+   site-id 20862410
+   site-id 20862412
+   site-id 20863315
+  !
+  site-list sl_DP_CN40
+   site-id 20861140
+  !
+  site-list sl_DP_CN50
+   site-id 20862150
+  !
+  site-list sl_GZGW
+   site-id 20869902
+  !
+  site-list sl_GZGWTEST
+   site-id 201
+  !
+  site-list sl_HK01
+   site-id 28522301
+  !
+  site-list sl_HKDC
+   site-id 28520001
+  !
+  site-list sl_ID04
+   site-id 20622104
+  !
+  site-list sl_INDIA_Sites
+   site-id 20910201-20910299
+   site-id 20911103-20911133
+   site-id 20912103-20912104
+   site-id 20912207-20912209
+   site-id 20912211
+   site-id 20912214
+   site-id 20912216
+   site-id 20912218
+   site-id 20912223
+   site-id 20912226
+   site-id 20912229
+   site-id 20912231
+   site-id 20912232
+   site-id 20912251
+   site-id 20912253
+   site-id 20912306
+   site-id 20912317
+   site-id 20912334
+   site-id 20912339
+   site-id 20912358
+   site-id 20912430
+   site-id 20912439
+   site-id 20913157
+   site-id 20913211-20913251
+   site-id 28803101
+  !
+  site-list sl_Internet_GW
+   site-id 20659901
+   site-id 28529901
+  !
+  site-list sl_Internet_GW_HK
+   site-id 28529901
+  !
+  site-list sl_Internet_GW_SG
+   site-id 20659901
+  !
+  site-list sl_Internet_SGGWTEST
+   site-id 204
+  !
+  site-list sl_JP01
+   site-id 20812201
+  !
+  site-list sl_SGDC
+   site-id 20650001
+  !
+  site-list sl_SHGW
+   site-id 20869901
+  !
+  site-list sl_dp_India_Sites
+   site-id 20910238
+   site-id 20910255
+   site-id 20911133
+   site-id 20912103-20912104
+   site-id 20912207-20912209
+   site-id 20912211
+   site-id 20912214
+   site-id 20912216
+   site-id 20912218
+   site-id 20912223
+   site-id 20912226
+   site-id 20912229
+   site-id 20912231
+   site-id 20912232
+   site-id 20912251
+   site-id 20912306
+   site-id 20912317
+   site-id 20912334
+   site-id 20912339
+   site-id 20912358
+   site-id 20912430
+   site-id 20912439
+   site-id 20913157
+   site-id 20913214
+   site-id 20913227
+   site-id 28803101
+  !
+  site-list sl_dp_North_Asia_Sites
+   site-id 20632201
+   site-id 20632204
+   site-id 20812201
+   site-id 20812202
+   site-id 20812207
+   site-id 20812315
+   site-id 20812405
+   site-id 20822102
+   site-id 20822105
+   site-id 20822106
+   site-id 20822201
+   site-id 20822303
+   site-id 20842201
+   site-id 28522301
+   site-id 28523311
+   site-id 28862301
+   site-id 28862305
+   site-id 28863302
+   site-id 28863303
+  !
+  site-list sl_dp_South_Asia_Sites
+   site-id 20602301
+   site-id 20602304
+   site-id 20602306
+   site-id 20610207
+   site-id 20612101
+   site-id 20612102
+   site-id 20613104
+   site-id 20613105
+   site-id 20613110
+   site-id 20613203
+   site-id 20613208
+   site-id 20621103
+   site-id 20622301
+   site-id 20622304
+   site-id 20622306
+   site-id 20642101
+   site-id 20642102
+   site-id 20643303
+   site-id 20652301
+   site-id 20652305
+   site-id 20653206
+   site-id 20653207
+   site-id 20653308
+   site-id 20662301
+   site-id 20662302
+   site-id 20843302
+  !
+  prefix-list CN3B02
+   ip-prefix 10.102.0.0/16
+   ip-prefix 10.102.39.0/29
+   ip-prefix 10.162.0.0/16
+   ip-prefix 10.163.0.0/21
+   ip-prefix 10.167.0.0/16
+   ip-prefix 10.218.32.32/32
+   ip-prefix 10.243.224.0/19
+  !
+  prefix-list CN40_prefix
+   ip-prefix 10.243.128.0/18
+  !
+  prefix-list CN50_prefix
+   ip-prefix 10.242.0.0/18
+  !
+  prefix-list DEFAULT_ROUTE
+   ip-prefix 0.0.0.0/0
+  !
+  prefix-list DENY-CHINAGW-PREFIXES
+   ip-prefix 192.168.52.0/22
+   ip-prefix 192.168.100.0/22
+   ip-prefix 192.168.208.0/21
+   ip-prefix 192.168.240.0/30
+  !
+  prefix-list DENY-PREFIXES
+   ip-prefix 0.0.0.0/0
+   ip-prefix 192.168.48.0/21 le 32 ge 21
+   ip-prefix 192.168.52.0/22 le 32 ge 22
+   ip-prefix 192.168.56.0/21 le 32 ge 21
+   ip-prefix 192.168.100.0/22 le 32 ge 22
+   ip-prefix 192.168.104.0/22 le 32 ge 22
+   ip-prefix 192.168.208.0/21 le 32 ge 21
+   ip-prefix 192.168.216.0/21 le 32 ge 21
+   ip-prefix 192.168.240.0/30
+  !
+  prefix-list DNS_IPaddress
+   ip-prefix 1.1.1.1/32
+   ip-prefix 114.114.114.114/32
+  !
+  prefix-list HK01_LAN_PREFIXES
+   ip-prefix 10.104.254.84/32
+   ip-prefix 10.108.1.62/32
+   ip-prefix 10.108.1.87/32
+   ip-prefix 10.108.1.105/32
+   ip-prefix 10.108.1.121/32
+   ip-prefix 10.108.1.122/32
+   ip-prefix 10.110.82.36/32
+   ip-prefix 10.110.82.37/32
+   ip-prefix 10.110.82.38/32
+   ip-prefix 10.110.82.39/32
+   ip-prefix 10.110.82.40/32
+   ip-prefix 10.110.82.44/32
+   ip-prefix 10.110.82.53/32
+   ip-prefix 10.111.72.32/32
+   ip-prefix 10.136.106.16/32
+  !
+  prefix-list HK07_02_ISE
+   ip-prefix 10.104.0.0/13
+  !
+  prefix-list HK07_02_Prefer
+   ip-prefix 10.0.0.0/8
+   ip-prefix 10.104.0.0/13
+  !
+  prefix-list IndiaZscaler
+   ip-prefix 165.225.120.42/32
+   ip-prefix 165.225.122.42/32
+  !
+  prefix-list JP05_LAN_PREFIXES
+   ip-prefix 10.78.128.0/18
+   ip-prefix 10.244.48.0/21
+   ip-prefix 172.16.30.0/23
+   ip-prefix 172.16.52.0/23
+  !
+  prefix-list Loreal_Supernet
+   ip-prefix 10.0.0.0/8
+   ip-prefix 29.0.0.0/8
+   ip-prefix 30.0.0.0/8
+   ip-prefix 128.0.0.0/8
+   ip-prefix 161.241.0.0/16
+   ip-prefix 172.16.0.0/12
+   ip-prefix 192.6.0.0/16
+   ip-prefix 192.7.202.0/24
+  !
+  prefix-list STATIC_BLOCK
+   ip-prefix 1.1.1.1/32
+   ip-prefix 58.220.95.8/32
+   ip-prefix 58.220.95.14/32
+   ip-prefix 58.220.95.15/32
+   ip-prefix 114.114.114.114/32
+   ip-prefix 165.225.112.8/32
+   ip-prefix 165.225.112.26/32
+   ip-prefix 165.225.112.27/32
+   ip-prefix 165.225.116.8/32
+   ip-prefix 165.225.116.26/32
+   ip-prefix 165.225.116.27/32
+   ip-prefix 211.144.19.12/32
+   ip-prefix 211.144.19.15/32
+   ip-prefix 221.122.91.36/32
+   ip-prefix 221.122.91.37/32
+  !
+  prefix-list Zscalar
+   ip-prefix 165.225.112.26/32
+   ip-prefix 165.225.116.26/32
+   ip-prefix 185.46.212.89/32
+   ip-prefix 185.46.212.90/32
+  !
+  prefix-list Zscaler_ZEN
+   ip-prefix 185.46.212.89/32
+   ip-prefix 185.46.212.90/32
+  !
+  prefix-list _AnyIpv4PrefixList
+   ip-prefix 0.0.0.0/0 le 32
+  !
+ !
+ control-policy cp_FROM_APAC_DC
+  sequence 1
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     omp-tag 65159
+    !
+   !
+  !
+  sequence 11
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SGDC
+   !
+   action accept
+    set
+     omp-tag 65157
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_FROM_ASIA_North_Subzone
+  sequence 1
+   match route
+    prefix-list DENY-PREFIXES
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match route
+    prefix-list JP05_LAN_PREFIXES
+    site-list   sl_JP01
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match route
+    prefix-list HK01_LAN_PREFIXES
+    site-list   sl_HK01
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_NORTH_Sites
+   !
+   action accept
+    set
+     omp-tag 6784
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_FROM_ASIA_South_Subzone
+  sequence 1
+   match route
+    prefix-list DENY-PREFIXES
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match route
+    prefix-list STATIC_BLOCK
+    site-list   sl_APAC_Sites
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_SOUTH_Sites
+   !
+   action accept
+    set
+     omp-tag 7684
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_FROM_CHINADC
+  sequence 1
+   match route
+    prefix-list DENY-CHINAGW-PREFIXES
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINADC
+   !
+   action accept
+    set
+     omp-tag 45110
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_FROM_CHINA_GW
+  sequence 1
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINAGW
+   !
+   action accept
+    set
+     omp-tag 45000
+    !
+   !
+  !
+  sequence 11
+   match route
+    origin      connected
+    prefix-list _AnyIpv4PrefixList
+   !
+   action accept
+    set
+     omp-tag 45110
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_FROM_CHINA_Subzone
+  sequence 1
+   match route
+    prefix-list DENY-PREFIXES
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match route
+    prefix-list DNS_IPaddress
+    site-list   sl_CN50
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match route
+    prefix-list STATIC_BLOCK
+    site-list   sl_CHINA_Sites
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match route
+    prefix-list CN50_prefix
+    site-list   sl_CN50
+   !
+   action accept
+    set
+     omp-tag    45110
+     preference 100
+    !
+   !
+  !
+  sequence 41
+   match route
+    prefix-list CN40_prefix
+    site-list   sl_CN40
+   !
+   action accept
+    set
+     omp-tag    45110
+     preference 100
+    !
+   !
+  !
+  sequence 51
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_Sites
+   !
+   action accept
+    set
+     omp-tag 45110
+    !
+   !
+  !
+  sequence 61
+   match tloc
+    group-id  30
+    site-list sl_CHINA_Sites
+   !
+   action reject
+   !
+  !
+  sequence 71
+   match tloc
+    color-list cl_CN50_GD8
+    site-list  sl_CN50
+   !
+   action reject
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_FROM_INDIA_Subzone
+  sequence 1
+   match route
+    prefix-list DENY-PREFIXES
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_INDIA_Sites
+   !
+   action accept
+    set
+     omp-tag 7684
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_FROM_INTERNET_GW
+  sequence 1
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_Internet_GW_HK
+   !
+   action accept
+    set
+     omp-tag 65159
+    !
+   !
+  !
+  sequence 11
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_Internet_GW_SG
+   !
+   action accept
+    set
+     omp-tag 65157
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_APAC_DC
+  sequence 1
+   match tloc
+    site-list sl_CHINA_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_CHINADC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match tloc
+    site-list sl_Internet_SGGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 51
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 61
+   match route
+    prefix-list Zscalar
+    site-list   sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 71
+   match tloc
+    site-list sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 81
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 91
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 101
+   match route
+    prefix-list CN3B02
+   !
+   action accept
+    set
+     tloc-list tl_CHINADC_PREFCN3B02
+    !
+   !
+  !
+  sequence 111
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINADC
+   !
+   action accept
+    set
+     tloc-list tl_CHINADC
+    !
+   !
+  !
+  sequence 121
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_NORTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SHGW_GZGW
+    !
+   !
+  !
+  sequence 131
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_SOUTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_GZGW_SHGW
+    !
+   !
+  !
+  sequence 141
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_o365test
+   !
+   action accept
+    set
+     tloc-list tl_H2H_GZGWTEST_SHGW
+    !
+   !
+  !
+  sequence 151
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SHGW
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SHGW_GZGW
+    !
+   !
+  !
+  sequence 161
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_GZGW
+   !
+   action accept
+    set
+     tloc-list tl_H2H_GZGW_SHGW
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_ASIA_North_Subzone
+  sequence 1
+   match tloc
+    site-list sl_CHINA_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    site-list sl_CHINADC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    site-list sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match route
+    prefix-list Zscalar
+    site-list   sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 51
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_Internet_GW
+   !
+   action accept
+    set
+     tloc-list tl_HKDC_and_SGDC
+    !
+   !
+  !
+  sequence 61
+   match tloc
+    site-list sl_INDIA_Sites
+   !
+   action reject
+   !
+  !
+  sequence 71
+   match tloc
+    site-list sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 81
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_Sites
+   !
+   action accept
+    set
+     tloc-list tl_HKDC_02_prefer_and_SGDC
+    !
+   !
+  !
+  sequence 91
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINADC
+   !
+   action accept
+    set
+     tloc-list tl_HKDC_and_SGDC
+    !
+   !
+  !
+  sequence 101
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_INDIA_Sites
+   !
+   action accept
+    set
+     tloc-list tl_HKDC_02_prefer_and_SGDC
+    !
+   !
+  !
+  sequence 111
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 121
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINAGW
+   !
+   action accept
+    set
+     tloc-list tl_HKDC_02_prefer_and_SGDC
+    !
+   !
+  !
+  sequence 131
+   match route
+    originator  10.218.32.4
+    prefix-list HK07_02_Prefer
+   !
+   action accept
+    set
+     preference 300
+    !
+   !
+  !
+  sequence 141
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     preference 200
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_ASIA_South_Subzone
+  sequence 1
+   match tloc
+    site-list sl_CHINA_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    site-list sl_CHINADC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    site-list sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match route
+    prefix-list Zscalar
+    site-list   sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 51
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_Internet_GW
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 61
+   match tloc
+    site-list sl_INDIA_Sites
+   !
+   action reject
+   !
+  !
+  sequence 71
+   match tloc
+    site-list sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 81
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_Sites
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 91
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINADC
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 101
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_INDIA_Sites
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 111
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 121
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINAGW
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 131
+   match route
+    originator  10.218.32.4
+    prefix-list HK07_02_ISE
+   !
+   action accept
+    set
+     preference 300
+    !
+   !
+  !
+  sequence 141
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SGDC
+   !
+   action accept
+    set
+     preference 200
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_CHINADC
+  sequence 1
+   match tloc
+    site-list sl_APAC_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match tloc
+    site-list sl_Internet_SGGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 51
+   match route
+    prefix-list Zscalar
+    site-list   sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 61
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_NORTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_HKDC_and_SGDC
+    !
+   !
+  !
+  sequence 71
+   match route
+    prefix-list Loreal_Supernet
+   !
+   action accept
+    set
+     tloc-list tl_HKDC_and_SGDC_PREFHKDC
+    !
+   !
+  !
+  sequence 81
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_SOUTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 91
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     tloc-list tl_HKDC_and_SGDC
+    !
+   !
+  !
+  sequence 101
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SGDC
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 111
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SHGW
+   !
+   action accept
+    set
+     preference 200
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_CHINA_NORTH_Subzone
+  sequence 1
+   match tloc
+    site-list sl_APAC_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    site-list sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    site-list sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_Internet_GW
+   !
+   action accept
+    set
+     tloc-list tl_SHGW_GZGW
+    !
+   !
+  !
+  sequence 51
+   match route
+    prefix-list DEFAULT_ROUTE
+   !
+   action accept
+    set
+     tloc-list tl_CHINADC
+    !
+   !
+  !
+  sequence 61
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_APAC_Sites
+   !
+   action accept
+    set
+     tloc-list tl_SHGW_GZGW
+    !
+   !
+  !
+  sequence 71
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_APAC_DC
+   !
+   action accept
+    set
+     tloc-list tl_SHGW_GZGW
+    !
+   !
+  !
+  sequence 81
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINADC
+   !
+   action accept
+    set
+     tloc-list tl_CHINADC
+    !
+   !
+  !
+  sequence 91
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SHGW
+   !
+   action accept
+    set
+     preference 200
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_CHINA_SOUTH_Subzone
+  sequence 1
+   match tloc
+    site-list sl_APAC_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    site-list sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    site-list sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_Internet_GW
+   !
+   action accept
+    set
+     tloc-list tl_GZGW_SHGW
+    !
+   !
+  !
+  sequence 51
+   match route
+    prefix-list DEFAULT_ROUTE
+   !
+   action accept
+    set
+     tloc-list tl_CHINADC
+    !
+   !
+  !
+  sequence 61
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_APAC_Sites
+   !
+   action accept
+    set
+     tloc-list tl_GZGW_SHGW
+    !
+   !
+  !
+  sequence 71
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_APAC_DC
+   !
+   action accept
+    set
+     tloc-list tl_GZGW_SHGW
+    !
+   !
+  !
+  sequence 81
+   match route
+    prefix-list CN3B02
+   !
+   action accept
+    set
+     tloc-list tl_CHINADC_PREFCN3B02
+    !
+   !
+  !
+  sequence 91
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINADC
+   !
+   action accept
+    set
+     tloc-list tl_CHINADC
+    !
+   !
+  !
+  sequence 101
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SHGW
+   !
+   action accept
+    set
+     preference 200
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_GZGW
+  sequence 1
+   match tloc
+    site-list sl_APAC_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match tloc
+    site-list sl_Internet_SGGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match tloc
+    site-list sl_GZGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 51
+   match route
+    prefix-list Zscaler_ZEN
+    site-list   sl_Internet_SGGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 61
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 71
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     preference 220
+    !
+   !
+  !
+  sequence 81
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     tloc-list tl_H2H_HKDC_SHGW
+    !
+   !
+  !
+  sequence 91
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SGDC
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_SHGW
+    !
+   !
+  !
+  sequence 101
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_NORTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_HKDC_SGDC_SHGW
+    !
+   !
+  !
+  sequence 111
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_SOUTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC_SHGW
+    !
+   !
+  !
+  sequence 121
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_INDIA_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC_SHGW
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_GZGWTEST
+  sequence 1
+   match tloc
+    site-list sl_APAC_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    site-list sl_CHINA_SOUTH_Sites
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    site-list sl_CHINA_NORTH_Sites
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match tloc
+    site-list sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 51
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_Internet_SGGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 61
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 71
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     preference 220
+    !
+   !
+  !
+  sequence 81
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     tloc-list tl_H2H_HKDC_SHGW
+    !
+   !
+  !
+  sequence 91
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SGDC
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_SHGW
+    !
+   !
+  !
+  sequence 101
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_NORTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_HKDC_SGDC_SHGW
+    !
+   !
+  !
+  sequence 111
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_SOUTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC_SHGW
+    !
+   !
+  !
+  sequence 121
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_INDIA_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC_SHGW
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_INDIA_Subzone
+  sequence 1
+   match tloc
+    site-list sl_CHINA_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    site-list sl_CHINADC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    site-list sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match route
+    prefix-list Zscalar
+    site-list   sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_Internet_GW
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 51
+   match tloc
+    site-list sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 61
+   match tloc
+    site-list sl_ASIA_SOUTH_Sites
+   !
+   action reject
+   !
+  !
+  sequence 71
+   match tloc
+    site-list sl_ASIA_NORTH_Sites
+   !
+   action reject
+   !
+  !
+  sequence 81
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_NORTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_HKDC_and_SGDC
+    !
+   !
+  !
+  sequence 91
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_SOUTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 101
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_Sites
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 111
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINADC
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 121
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 131
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINAGW
+   !
+   action accept
+    set
+     tloc-list tl_SGDC_and_HKDC
+    !
+   !
+  !
+  sequence 141
+   match route
+    originator  10.218.32.4
+    prefix-list HK07_02_ISE
+   !
+   action accept
+    set
+     preference 300
+    !
+   !
+  !
+  sequence 151
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SGDC
+   !
+   action accept
+    set
+     preference 200
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_INTERNET_GW_HK
+  sequence 1
+   match tloc
+    site-list sl_CHINA_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_CHINADC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match tloc
+    site-list sl_APAC_Sites
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 51
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 61
+   match tloc
+    site-list sl_Internet_SGGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 71
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 81
+   match route
+    prefix-list DEFAULT_ROUTE
+   !
+   action reject
+   !
+  !
+  sequence 91
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 101
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINADC
+   !
+   action accept
+    set
+     tloc-list tl_CHINADC
+    !
+   !
+  !
+  sequence 111
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_NORTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SHGW_GZGW
+    !
+   !
+  !
+  sequence 121
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_SOUTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_GZGW_SHGW
+    !
+   !
+  !
+  sequence 131
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_o365test
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SHGW
+    !
+   !
+  !
+  sequence 141
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SHGW
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SHGW_GZGW
+    !
+   !
+  !
+  sequence 151
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_GZGW
+   !
+   action accept
+    set
+     tloc-list tl_H2H_GZGW_SHGW
+    !
+   !
+  !
+  sequence 161
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     preference 200
+    !
+   !
+  !
+  sequence 171
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     tloc-list tl_H2H_HKDC_SGDC
+    !
+   !
+  !
+  sequence 181
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SGDC
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC
+    !
+   !
+  !
+  sequence 191
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_NORTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_HKDC_SGDC
+    !
+   !
+  !
+  sequence 201
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_SOUTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC
+    !
+   !
+  !
+  sequence 211
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_INDIA_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_INTERNET_GW_SG
+  sequence 1
+   match tloc
+    site-list sl_CHINA_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_CHINADC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match tloc
+    site-list sl_APAC_Sites
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 51
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 61
+   match tloc
+    site-list sl_Internet_SGGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 71
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 81
+   match route
+    prefix-list DEFAULT_ROUTE
+   !
+   action reject
+   !
+  !
+  sequence 91
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 101
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINADC
+   !
+   action accept
+    set
+     tloc-list tl_CHINADC
+    !
+   !
+  !
+  sequence 111
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_NORTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SHGW_GZGW
+    !
+   !
+  !
+  sequence 121
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_SOUTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_GZGW_SHGW
+    !
+   !
+  !
+  sequence 131
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_o365test
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SHGW
+    !
+   !
+  !
+  sequence 141
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SHGW
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SHGW_GZGW
+    !
+   !
+  !
+  sequence 151
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_GZGW
+   !
+   action accept
+    set
+     tloc-list tl_H2H_GZGW_SHGW
+    !
+   !
+  !
+  sequence 161
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     preference 200
+    !
+   !
+  !
+  sequence 171
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     tloc-list tl_H2H_HKDC_SGDC
+    !
+   !
+  !
+  sequence 181
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SGDC
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC
+    !
+   !
+  !
+  sequence 191
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_NORTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_HKDC_SGDC
+    !
+   !
+  !
+  sequence 201
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_SOUTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC
+    !
+   !
+  !
+  sequence 211
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_INDIA_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_INTERNET_SGGWTEST
+  sequence 1
+   match tloc
+    site-list sl_CHINA_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    site-list sl_CHINADC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    site-list sl_CHINAGW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_GZGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match tloc
+    site-list sl_APAC_Sites
+   !
+   action reject
+   !
+  !
+  sequence 51
+   match tloc
+    site-list sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 61
+   match tloc
+    site-list sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 71
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 81
+   match route
+    prefix-list DEFAULT_ROUTE
+   !
+   action reject
+   !
+  !
+  sequence 91
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINA_o365test
+   !
+   action accept
+    set
+     tloc-list tl_GZGWTEST
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_SHGW
+  sequence 1
+   match tloc
+    site-list sl_APAC_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    color-list cl_INTERNET_COLORS
+    site-list  sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match tloc
+    site-list sl_Internet_SGGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match tloc
+    site-list sl_GZGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 51
+   match route
+    prefix-list Zscaler_ZEN
+    site-list   sl_Internet_SGGWTEST
+   !
+   action reject
+   !
+  !
+  sequence 61
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 71
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     preference 220
+    !
+   !
+  !
+  sequence 81
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_HKDC
+   !
+   action accept
+    set
+     tloc-list tl_H2H_HKDC_GZGW
+    !
+   !
+  !
+  sequence 91
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SGDC
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_GZGW
+    !
+   !
+  !
+  sequence 101
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_NORTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_HKDC_SGDC_GZGW
+    !
+   !
+  !
+  sequence 111
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_ASIA_SOUTH_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC_GZGW
+    !
+   !
+  !
+  sequence 121
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_INDIA_Sites
+   !
+   action accept
+    set
+     tloc-list tl_H2H_SGDC_HKDC_GZGW
+    !
+   !
+  !
+  default-action accept
+ !
+ control-policy cp_TO_sl_CHINA_o365test
+  sequence 1
+   match tloc
+    site-list sl_APAC_Sites
+   !
+   action reject
+   !
+  !
+  sequence 11
+   match tloc
+    site-list sl_APAC_DC
+   !
+   action reject
+   !
+  !
+  sequence 21
+   match tloc
+    site-list sl_Internet_GW
+   !
+   action reject
+   !
+  !
+  sequence 31
+   match route
+    prefix-list IndiaZscaler
+   !
+   action reject
+   !
+  !
+  sequence 41
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_Internet_GW
+   !
+   action accept
+    set
+     tloc-list tl_GZGWTEST_SHGW
+    !
+   !
+  !
+  sequence 51
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_APAC_Sites
+   !
+   action accept
+    set
+     tloc-list tl_GZGWTEST_SHGW
+    !
+   !
+  !
+  sequence 61
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_APAC_DC
+   !
+   action accept
+    set
+     tloc-list tl_GZGWTEST_SHGW
+    !
+   !
+  !
+  sequence 71
+   match route
+    prefix-list CN3B02
+   !
+   action accept
+    set
+     tloc-list tl_CHINADC_PREFCN3B02
+    !
+   !
+  !
+  sequence 81
+   match route
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_CHINADC
+   !
+   action accept
+    set
+     tloc-list tl_CHINADC
+    !
+   !
+  !
+  sequence 91
+   match route
+    origin      bgp-external
+    prefix-list _AnyIpv4PrefixList
+    site-list   sl_SHGW
+   !
+   action accept
+    set
+     preference 200
+    !
+   !
+  !
+  default-action accept
+ !
+!
+apply-policy
+ site-list ALL-SITES
+  data-policy _vpn2_DP-LOREAL-CFLOWD_VPN2_vpn1_DP-LOREAL-CFLOWD_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list HK01
+  data-policy _vpn2_dp_MERAKI_LAN_HK01_VPN2_vpn1_dp_MERAKI_LAN_HK01_VPN1 from-service
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list JP02_1000eye
+  data-policy _vpn2_DP-LOREAL-CFLOWD_1000eye_VPN2_vpn1_DP-LOREAL-CFLOWD_1000eye_VPN1 from-service
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list JP07_1000eye_VPN2_Zscaler
+  data-policy _vpn2_DP-LOREAL-CFLOWD_1000eye_JP07_VPN2_vpn1_DP-LOREAL-CFLOWD_1000eye_JP07_VPN1 from-service
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list NozScaler_sites
+  data-policy _vpn2_dp_MERAKI_LAN_VPN2_vpn1_dp_MERAKI_LAN_VPN1 from-service
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list TH01_DNS_61
+  data-policy _vpn2_DP-LOREAL-CFLOWD_DNS_61_VPN2_vpn1_DP-LOREAL-CFLOWD_DNS_61_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list TW01_DNS_1000eye
+  data-policy _vpn2_DP-LOREAL-CFLOWD_Asia_DNS_1000eye_TW01_VPN2_vpn1_DP-LOREAL-CFLOWD_Asia_DNS_1000eye_TW01_VPN1 from-service
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list TW01_ID01_DNS_1000eye
+  data-policy _vpn2_DP-LOREAL-CFLOWD_Asia_DNS_1000eye_VPN2_vpn1_DP-LOREAL-CFLOWD_Asia_DNS_1000eye_VPN1 from-service
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list dp_KR05
+  data-policy _vpn2_dp_MERAKI_LAN_KR05_VPN2_vpn1_dp_MERAKI_LAN_KR05_VPN1 from-service
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list dp_WEBEX
+  data-policy _vpn1_DP_MERAKI_WEBEX from-service
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_AAR_ALL_SPOKE_SITES
+  app-route-policy _vpn1_arp_ALL_SPOKE_SITES
+ !
+ site-list sl_AAR_IGW_TEST
+  app-route-policy _vpn1_arp_IGW_TEST
+ !
+ site-list sl_AAR_SAAS
+  app-route-policy _vpn1_arp_ALL_SPOKE_SITES_CEDGE
+ !
+ site-list sl_APAC_DC
+  control-policy cp_FROM_APAC_DC in
+  control-policy cp_TO_APAC_DC out
+  data-policy _vpn2_DP-LOREAL-CFLOWD_VPN2_vpn1_SG03-DP-LOREAL-CFLOWD_VPN1 all
+  app-route-policy _vpn1_arp_APAC_DC
+  cflowd-template  LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_ASIA_NORTH_Sites
+  control-policy cp_FROM_ASIA_North_Subzone in
+  control-policy cp_TO_ASIA_North_Subzone out
+ !
+ site-list sl_ASIA_SOUTH_Sites
+  control-policy cp_FROM_ASIA_South_Subzone in
+  control-policy cp_TO_ASIA_South_Subzone out
+ !
+ site-list sl_CHINADC
+  control-policy cp_FROM_CHINADC in
+  control-policy cp_TO_CHINADC out
+  data-policy _vpn2_DP-LOREAL-CFLOWD_VPN2_vpn1_DP-LOREAL-CFLOWD_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_CHINA_NORTH_Sites
+  control-policy cp_FROM_CHINA_Subzone in
+  control-policy cp_TO_CHINA_NORTH_Subzone out
+ !
+ site-list sl_CHINA_NoZscaler
+  data-policy _vpn1_dp_CHINA-NozScaler all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_CHINA_SOUTH_Sites
+  control-policy cp_FROM_CHINA_Subzone in
+  control-policy cp_TO_CHINA_SOUTH_Subzone out
+ !
+ site-list sl_CHINA_o365test
+  control-policy cp_FROM_CHINA_Subzone in
+  control-policy cp_TO_sl_CHINA_o365test out
+  data-policy _vpn1_dp_ChinaSouth_O365test all
+  app-route-policy _vpn1_arp_ChinaSouth_o365test
+  cflowd-template  LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_CN20_HKGW_TEST
+  data-policy _vpn1_vpn1_dp_CN20_CHINA-NozScaler from-service
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_CN25_HKGW_TEST
+  data-policy _vpn1_dp_CN25_CHINA-NozScaler all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_COR_DP_Intra_DNS_North_Zscale
+  data-policy _vpn2_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_North_Zscaler_VPN2_vpn1_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_North_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_COR_DP_Intranet_DNS_North
+  data-policy _vpn2_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_North_VPN2_vpn1_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_North_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_COR_DP_Intranet_DNS_South
+  data-policy _vpn2_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_South_VPN2_vpn1_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_South_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_COR_DP_Intranet_VRF2Zscalar
+  data-policy _vpn2_DP-LOREAL-CFLOWD_Intranet_ZSCALER_VPN2_vpn1_DP-LOREAL-CFLOWD_Intranet_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_CloudonRamp
+  data-policy _vpn2_DP-INTRANET-TEST_VPN2_vpn1_DP-INTRANET-TEST_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_CloudonRamp_DP_Intranet
+  data-policy _vpn2_DP-LOREAL-CFLOWD_Intranet_VPN2_vpn1_DP-LOREAL-CFLOWD_Intranet_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_CloudonRamp_Meraki
+  data-policy _vpn2_dp_MERAKI_LAN_INTRANET_TEST_VPN2_vpn1_dp_MERAKI_LAN_INTRANET_TEST_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_CloudonRamp_Meraki_VPN2
+  data-policy _vpn2_dp_MERAKI_LAN_INTRANET_TEST_VPN2_SC_VPN2_vpn1_dp_MERAKI_LAN_INTRANET_TEST_VPN2_SC_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_DP_CHINA_IGW_CN02
+  data-policy _vpn2_dp_IGW_CHINA_CN02_VPN2_vpn1_dp_IGW_CHINA_CN02_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_DP_CHINA_IGW_TEST
+  data-policy _vpn2_dp_IGW_CHINA_TEST_VPN2_vpn1_dp_IGW_CHINA_TEST all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_DP_CN40
+  data-policy _vpn2_dp_CN40_GD8_new_VPN2_vpn1_dp_CN40_GD8_new_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_DP_CN50
+  data-policy _vpn2_dp_IGW_CHINA_TEST_VPN2_vpn1_dp_CN50 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_GZGW
+  control-policy cp_FROM_CHINA_GW in
+  control-policy cp_TO_GZGW out
+  data-policy _vpn1_dp_CHINAGW all
+  app-route-policy _vpn1_arp_CHINA_GW
+  cflowd-template  LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_GZGWTEST
+  control-policy cp_FROM_CHINA_GW in
+  control-policy cp_TO_GZGWTEST out
+  data-policy _vpn1_dp_GZGWTEST all
+  app-route-policy _vpn1_arp_GZGWTEST
+  cflowd-template  LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_ID04
+  data-policy _vpn2_dp_MERAKI_LAN_INTRANET_TEST_VPN2_vpn1_dp_MERAKI_LAN_INTRANET_TEST_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_INDIA_Sites
+  control-policy cp_FROM_INDIA_Subzone in
+  control-policy cp_TO_INDIA_Subzone out
+ !
+ site-list sl_Internet_GW_HK
+  control-policy cp_FROM_INTERNET_GW in
+  control-policy cp_TO_INTERNET_GW_HK out
+  data-policy _vpn1_dp_LOCAL_EXIT from-tunnel
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_Internet_GW_SG
+  control-policy cp_FROM_INTERNET_GW in
+  control-policy cp_TO_INTERNET_GW_SG out
+  data-policy _vpn1_dp_LOCAL_EXIT from-tunnel
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_Internet_SGGWTEST
+  control-policy cp_FROM_INTERNET_GW in
+  control-policy cp_TO_INTERNET_SGGWTEST out
+  data-policy _vpn1_dp_SGGWTEST all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_SHGW
+  control-policy cp_FROM_CHINA_GW in
+  control-policy cp_TO_SHGW out
+  data-policy _vpn1_dp_CHINAGW all
+  app-route-policy _vpn1_arp_CHINA_GW
+  cflowd-template  LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_dp_India_Sites
+  data-policy _vpn2_dp_India_Sites_VPN2_vpn1_dp_India_Sites_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_dp_North_Asia_Sites
+  data-policy _vpn2_dp_North_Asia_Sites_VPN2_vpn1_dp_North_Asia_Sites_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_dp_South_Asia_Sites
+  data-policy _vpn2_dp_South_Asia_Sites_VPN2_vpn1_dp_South_Asia_Sites_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+!
