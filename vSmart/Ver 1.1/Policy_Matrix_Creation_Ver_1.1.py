@@ -158,7 +158,7 @@ def Insert_content_column(wb,policy_list,sheet_name, keyword = None, tag='no'):
     ws_format(ws,keyword)
 
 #Define file path
-path = 'I:/Python/vsmart/Ver1.1/'
+path = 'E:/Python/L-Oreal/vSmart/Ver 1.1/'
 vsmart_config = 'vSmart.txt'
 sitelist_file = 'site_list.txt'
 file_path = path + vsmart_config
