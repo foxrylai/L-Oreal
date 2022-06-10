@@ -65,7 +65,7 @@
    group       netadmin
   !
   user vinod
-   password    $6$dArnAhI52BV0lawu$urfCSBGw1LXL5LvTsM0jqg2XHKmlhzx5t47OZSWUcbn1tUqSwLstUGUdyMseKRRp8jbP3sGO.LR86Cg4nwIbM1
+   password    $6$tUbTxt9Vf6rsAKcB$rJ/wKZDKLI5OVrIMfU9WlJW/re90qfSfIMaAlnM6KsAuWbSYQhjRnU5hIumSwWPWiaZHWp6dgPyoRj30WBmKb1
    description CiscoAS
    group       operator
   !
@@ -1794,7 +1794,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_msteams_631278393
+     count nat_msteams_-1635664595
      nat use-vpn 0
      nat fallback
      set
@@ -1807,13 +1807,12 @@ policy
    !
    sequence 11
     match
-     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
      destination-data-prefix-list dpl_MSTeams_TCP_PREFIXES
      destination-port             443 80
      protocol                     6
     !
     action accept
-     count nat_msteams_tcp_631278393
+     count nat_msteams_tcp_-1635664595
      nat use-vpn 0
      nat fallback
      set
@@ -1826,13 +1825,12 @@ policy
    !
    sequence 21
     match
-     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
      destination-data-prefix-list dpl_MSExchange_PREFIXES
      destination-port             143 25 443 587 80 993 995
      protocol                     6
     !
     action accept
-     count nat_msexchange_631278393
+     count nat_msexchange_-1635664595
      nat use-vpn 0
      nat fallback
      set
@@ -1845,13 +1843,12 @@ policy
    !
    sequence 31
     match
-     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
      destination-data-prefix-list dpl_MSSharePoint_PREFIXES
      destination-port             443 80
      protocol                     6
     !
     action accept
-     count nat_mssharepoint_631278393
+     count nat_mssharepoint_-1635664595
      nat use-vpn 0
      nat fallback
      set
@@ -1864,13 +1861,12 @@ policy
    !
    sequence 41
     match
-     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
      destination-data-prefix-list dpl_MSCommonO365_PREFIXES
      destination-port             443 80
      protocol                     6
     !
     action accept
-     count nat_mscommono365_631278393
+     count nat_mscommono365_-1635664595
      nat use-vpn 0
      nat fallback
      set
@@ -1940,7 +1936,7 @@ policy
      destination-data-prefix-list dpl_ANY_PREFIXES
     !
     action accept
-     count nat_631278394
+     count nat_-1635664594
      nat use-vpn 0
      nat fallback
      set
@@ -2090,33 +2086,88 @@ policy
   vpn-list vpn1
    sequence 1
     match
-     source-data-prefix-list      spl_Teams_Meeting_Room
      destination-data-prefix-list dpl_MSTeams_PREFIXES
      protocol                     17
     !
     action accept
-     set
-      local-tloc-list
-       color mpls gold
-       encap ipsec
-      !
-      vpn       1
-      tloc-list tl_H2H_SHGW_GZGW
-     !
-    !
-   !
-   sequence 11
-    match
-     destination-data-prefix-list dpl_MSTeams_PREFIXES
-     protocol                     17
-    !
-    action accept
-     count nat_counter_379141604
+     count nat_counter_888288792
      nat use-vpn 0
      nat fallback
     !
    !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_MSTeams_TCP_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_msteams_tcp_888288792
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet public-internet
+       encap ipsec
+      !
+     !
+    !
+   !
    sequence 21
+    match
+     destination-data-prefix-list dpl_MSExchange_PREFIXES
+     destination-port             143 25 443 587 80 993 995
+     protocol                     6
+    !
+    action accept
+     count nat_msexchange_888288792
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet public-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_MSSharePoint_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mssharepoint_888288792
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet public-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dpl_MSCommonO365_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mscommono365_888288792
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet public-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
     match
      source-data-prefix-list      CHINA-BR-VIP
      destination-data-prefix-list dpl_OA_PREFIXES
@@ -2130,12 +2181,12 @@ policy
      !
     !
    !
-   sequence 31
+   sequence 61
     match
      source-data-prefix-list CHINA-BR-VIP
     !
     action accept
-     count GD8-traffic_379141604
+     count GD8-traffic_888288792
      nat use-vpn 0
      nat fallback
      set
@@ -2147,20 +2198,7 @@ policy
      !
     !
    !
-   sequence 41
-    match
-     destination-data-prefix-list dpl_Zscaler_HK_SG
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 51
+   sequence 71
     match
      destination-data-prefix-list dpl_Zscaler_ZEN
     !
@@ -2171,7 +2209,7 @@ policy
      !
     !
    !
-   sequence 61
+   sequence 81
     match
      source-data-prefix-list      dpl_CHINA_NoZscaler
      destination-data-prefix-list dpl_OA_PREFIXES
@@ -2185,17 +2223,17 @@ policy
      !
     !
    !
-   sequence 71
+   sequence 91
     match
      source-data-prefix-list dpl_CHINA_NoZscaler
     !
     action accept
-     count nat_379141604
+     count nat_888288792
      nat use-vpn 0
      nat fallback
     !
    !
-   sequence 81
+   sequence 101
     match
      destination-data-prefix-list dpl_OA_PREFIXES
     !
@@ -2203,7 +2241,7 @@ policy
      cflowd
     !
    !
-   sequence 91
+   sequence 111
     match
      source-ip 0.0.0.0/0
      protocol  6
@@ -2212,7 +2250,7 @@ policy
      cflowd
     !
    !
-   sequence 101
+   sequence 121
     match
      source-ip 0.0.0.0/0
      protocol  17
@@ -2448,12 +2486,60 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-1729405254
+     count nat_-1592148148
      nat use-vpn 0
      nat fallback
     !
    !
    sequence 11
+    match
+     destination-data-prefix-list dpl_MSTeams_TCP_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_msteams_tcp_-1592148148
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 21
+    match
+     destination-data-prefix-list dpl_MSExchange_PREFIXES
+     destination-port             143 25 443 587 80 993 995
+     protocol                     6
+    !
+    action accept
+     count nat_msexchange_-1592148148
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_MSSharePoint_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mssharepoint_-1592148148
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dpl_MSCommonO365_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mscommono365_-1592148148
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 51
     match
      source-data-prefix-list      dp_NoZscaler
      destination-data-prefix-list dpl_OA_PREFIXES
@@ -2467,17 +2553,17 @@ policy
      !
     !
    !
-   sequence 21
+   sequence 61
     match
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-1729405254
+     count nat_-1592148148
      nat use-vpn 0
      nat fallback
     !
    !
-   sequence 31
+   sequence 71
     match
      source-data-prefix-list      dpl_webex_source
      destination-data-prefix-list dpl_OA_PREFIXES
@@ -2491,18 +2577,18 @@ policy
      !
     !
    !
-   sequence 41
+   sequence 81
     match
      source-data-prefix-list      dpl_webex_source
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_-1729405254
+     count nat_-1592148148
      nat use-vpn 0
      nat fallback
     !
    !
-   sequence 51
+   sequence 91
     match
      source-data-prefix-list      dpl_ThousandEye
      destination-data-prefix-list dpl_OA_PREFIXES
@@ -2516,27 +2602,27 @@ policy
      !
     !
    !
-   sequence 61
+   sequence 101
     match
      source-data-prefix-list dpl_ThousandEye
     !
     action accept
-     count nat_-1729405254
+     count nat_-1592148148
      nat use-vpn 0
      nat fallback
     !
    !
-   sequence 71
+   sequence 111
     match
      destination-data-prefix-list dpl_WEBSITES
     !
     action accept
-     count nat_-1729405254
+     count nat_-1592148148
      nat use-vpn 0
      nat fallback
     !
    !
-   sequence 81
+   sequence 121
     match
      source-ip 0.0.0.0/0
      protocol  6
@@ -2545,7 +2631,7 @@ policy
      cflowd
     !
    !
-   sequence 91
+   sequence 131
     match
      source-ip 0.0.0.0/0
      protocol  17
@@ -3933,77 +4019,74 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-24064383
+     count nat_-1959277697
      nat use-vpn 0
      nat fallback
     !
    !
    sequence 11
     match
-     destination-data-prefix-list dpl_DNS
-     destination-port             53
-     protocol                     17
+     destination-data-prefix-list dpl_MSTeams_TCP_PREFIXES
+     destination-port             443 80
+     protocol                     6
     !
     action accept
-     count nat_-24064383
+     count nat_msteams_tcp_-1959277697
      nat use-vpn 0
      nat fallback
     !
    !
    sequence 21
     match
-     source-data-prefix-list      dpl_ThousandEye
-     destination-data-prefix-list dpl_OA_PREFIXES
+     destination-data-prefix-list dpl_MSExchange_PREFIXES
+     destination-port             143 25 443 587 80 993 995
+     protocol                     6
     !
     action accept
-     set
-      local-tloc-list
-       color gold
-       encap ipsec
-      !
-     !
+     count nat_msexchange_-1959277697
+     nat use-vpn 0
+     nat fallback
     !
    !
    sequence 31
     match
-     source-data-prefix-list      dpl_ThousandEye
-     destination-data-prefix-list dpl_1000eyedestination
-     protocol                     1
+     destination-data-prefix-list dpl_MSSharePoint_PREFIXES
+     destination-port             443 80
+     protocol                     6
     !
     action accept
-     count nat_-24064383
+     count nat_mssharepoint_-1959277697
      nat use-vpn 0
      nat fallback
     !
    !
    sequence 41
     match
-     destination-data-prefix-list dp_IntranetApps
+     destination-data-prefix-list dpl_MSCommonO365_PREFIXES
+     destination-port             443 80
+     protocol                     6
     !
     action accept
-     cflowd
-     set
-      vpn       1
-      tloc-list tl_HKDC_and_SGDC
-     !
+     count nat_mscommono365_-1959277697
+     nat use-vpn 0
+     nat fallback
     !
    !
    sequence 51
     match
-     source-data-prefix-list      dpl_GRP_SRC_StepPlus
-     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
-     destination-port             22
-     protocol                     6
+     destination-data-prefix-list dpl_DNS
+     destination-port             53
+     protocol                     17
     !
     action accept
-     count nat_-24064383
+     count nat_-1959277697
      nat use-vpn 0
      nat fallback
     !
    !
    sequence 61
     match
-     source-data-prefix-list      dp_NoZscaler
+     source-data-prefix-list      dpl_ThousandEye
      destination-data-prefix-list dpl_OA_PREFIXES
     !
     action accept
@@ -4017,15 +4100,66 @@ policy
    !
    sequence 71
     match
-     source-data-prefix-list dp_NoZscaler
+     source-data-prefix-list      dpl_ThousandEye
+     destination-data-prefix-list dpl_1000eyedestination
+     protocol                     1
     !
     action accept
-     count nat_-24064383
+     count nat_-1959277697
      nat use-vpn 0
      nat fallback
     !
    !
    sequence 81
+    match
+     destination-data-prefix-list dp_IntranetApps
+    !
+    action accept
+     cflowd
+     set
+      vpn       1
+      tloc-list tl_HKDC_and_SGDC
+     !
+    !
+   !
+   sequence 91
+    match
+     source-data-prefix-list      dpl_GRP_SRC_StepPlus
+     destination-data-prefix-list dpl_GRP_EXT_SRV_SFTP_ACCENTURE
+     destination-port             22
+     protocol                     6
+    !
+    action accept
+     count nat_-1959277697
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 101
+    match
+     source-data-prefix-list      dp_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color gold
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 111
+    match
+     source-data-prefix-list dp_NoZscaler
+    !
+    action accept
+     count nat_-1959277697
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 121
     match
      source-data-prefix-list      dpl_webex_source
      destination-data-prefix-list dpl_OA_PREFIXES
@@ -4039,28 +4173,28 @@ policy
      !
     !
    !
-   sequence 91
+   sequence 131
     match
      source-data-prefix-list      dpl_webex_source
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_-24064383
+     count nat_-1959277697
      nat use-vpn 0
      nat fallback
     !
    !
-   sequence 101
+   sequence 141
     match
      destination-data-prefix-list dpl_WEBSITES
     !
     action accept
-     count nat_-24064383
+     count nat_-1959277697
      nat use-vpn 0
      nat fallback
     !
    !
-   sequence 111
+   sequence 151
     match
      source-ip 0.0.0.0/0
      protocol  6
@@ -4069,7 +4203,7 @@ policy
      cflowd
     !
    !
-   sequence 121
+   sequence 161
     match
      source-ip 0.0.0.0/0
      protocol  17
@@ -4095,7 +4229,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-24064382
+     count nat_-1959277696
      nat use-vpn 0
      nat fallback
     !
