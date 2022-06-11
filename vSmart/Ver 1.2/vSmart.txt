@@ -65,7 +65,7 @@
    group       netadmin
   !
   user vinod
-   password    $6$tUbTxt9Vf6rsAKcB$rJ/wKZDKLI5OVrIMfU9WlJW/re90qfSfIMaAlnM6KsAuWbSYQhjRnU5hIumSwWPWiaZHWp6dgPyoRj30WBmKb1
+   password    $6$kmqKYjM.9vHwXssi$eEGrKKP3ZS6lKu9AXRvTVGLsAcKxQo/6bawivkgAxsgru2OGlXX4.oIAidTYEbPF82bAwyJNlAidlirhARVTR0
    description CiscoAS
    group       operator
   !
@@ -5867,6 +5867,7 @@ policy
    site-id 20822201
    site-id 20822303
    site-id 20842201
+   site-id 20843302
    site-id 28522301
    site-id 28523311
    site-id 28862301
@@ -5896,7 +5897,6 @@ policy
    site-id 20653308
    site-id 20662301-20662302
    site-id 20662402
-   site-id 20843302
    site-id 28803102-28803199
   !
   site-list sl_CHINADC
@@ -6138,6 +6138,7 @@ policy
    site-id 20822201
    site-id 20822303
    site-id 20842201
+   site-id 20843302
    site-id 28522301
    site-id 28523311
    site-id 28862301
@@ -6171,7 +6172,6 @@ policy
    site-id 20653308
    site-id 20662301
    site-id 20662302
-   site-id 20843302
   !
   prefix-list CN3B02
    ip-prefix 10.102.0.0/16
