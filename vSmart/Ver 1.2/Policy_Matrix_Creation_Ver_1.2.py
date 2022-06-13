@@ -154,7 +154,7 @@ def Insert_content_column(wb,policy_list,sheet_name, keyword = None, tag='no'):
                 column_num += 1
         else:
             column_num +=1
-    ws_format(ws,sheet_name, sheet_name)
+    ws_format(ws,sheet_name, keyword= keyword)
 
 #Define file path
 path = 'E:/Python/L-Oreal/vSmart/Ver 1.2/'

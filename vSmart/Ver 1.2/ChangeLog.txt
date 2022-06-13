@@ -1,2 +1,3 @@
-ver1.2 
-1. Insert table automaticaly
+Policy_Matrix_Creation_Ver_1.2:
+1. Insert table format automaticaly
+2. fixed keyword highlight not working issue
