@@ -65,7 +65,7 @@
    group       netadmin
   !
   user vinod
-   password    $6$kmqKYjM.9vHwXssi$eEGrKKP3ZS6lKu9AXRvTVGLsAcKxQo/6bawivkgAxsgru2OGlXX4.oIAidTYEbPF82bAwyJNlAidlirhARVTR0
+   password    $6$zSsIMNBWXj.5x7HW$m53czpG9ye0cMx8V7wPLt4Aq5d4hA5.ogsPy1F7CC4QSOodu0rQXq52g32pMr1GDO0yCifBTzLRFau9lK9mtM1
    description CiscoAS
    group       operator
   !
@@ -4252,7 +4252,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-2066137306
+     count nat_-1176540644
      nat use-vpn 0
      nat fallback
     !
@@ -4264,7 +4264,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msteams_tcp_-2066137306
+     count nat_msteams_tcp_-1176540644
      nat use-vpn 0
      nat fallback
     !
@@ -4276,7 +4276,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msexchange_-2066137306
+     count nat_msexchange_-1176540644
      nat use-vpn 0
      nat fallback
     !
@@ -4288,7 +4288,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mssharepoint_-2066137306
+     count nat_mssharepoint_-1176540644
      nat use-vpn 0
      nat fallback
     !
@@ -4300,7 +4300,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mscommono365_-2066137306
+     count nat_mscommono365_-1176540644
      nat use-vpn 0
      nat fallback
     !
@@ -4312,7 +4312,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-2066137306
+     count nat_-1176540644
      nat use-vpn 0
      nat fallback
     !
@@ -4336,7 +4336,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-2066137306
+     count nat_-1176540644
      nat use-vpn 0
      nat fallback
     !
@@ -4361,7 +4361,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_-2066137306
+     count nat_-1176540644
      nat use-vpn 0
      nat fallback
     !
@@ -4385,7 +4385,7 @@ policy
      source-data-prefix-list dpl_ThousandEye
     !
     action accept
-     count nat_-2066137306
+     count nat_-1176540644
      nat use-vpn 0
      nat fallback
     !
@@ -4395,12 +4395,25 @@ policy
      destination-data-prefix-list dpl_WEBSITES
     !
     action accept
-     count nat_-2066137306
+     count nat_-1176540644
      nat use-vpn 0
      nat fallback
     !
    !
    sequence 131
+    match
+     source-data-prefix-list      dpl_NZ01_NZ02
+     destination-data-prefix-list dpl_Amazon_Connect
+     destination-port             3478
+     protocol                     17
+    !
+    action accept
+     count nat_amazon_connect_-1176540644
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 141
     match
      source-ip 0.0.0.0/0
      protocol  6
@@ -4409,7 +4422,7 @@ policy
      cflowd
     !
    !
-   sequence 141
+   sequence 151
     match
      source-ip 0.0.0.0/0
      protocol  17
@@ -5052,6 +5065,10 @@ policy
    ip-prefix 10.97.140.0/22
    ip-prefix 10.97.144.0/21
   !
+  data-prefix-list dpl_Amazon_Connect
+   ip-prefix 13.210.2.192/26
+   ip-prefix 13.236.8.0/25
+  !
   data-prefix-list dpl_CHINA_NoZscaler
    ip-prefix 10.243.93.128/27
    ip-prefix 10.243.195.0/27
@@ -5141,6 +5158,12 @@ policy
   !
   data-prefix-list dpl_NANDAGLOBAL
    ip-prefix 183.111.100.13/32
+  !
+  data-prefix-list dpl_NZ01_NZ02
+   ip-prefix 10.240.176.0/24
+   ip-prefix 10.240.177.0/24
+   ip-prefix 10.240.184.0/26
+   ip-prefix 10.240.184.64/26
   !
   data-prefix-list dpl_OA_PREFIXES
    ip-prefix 10.0.0.0/8
