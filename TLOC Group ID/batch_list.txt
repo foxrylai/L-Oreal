@@ -86,4 +86,3 @@ TH01 batch9
 TH01 batch9
 TH02 batch9
 TH02 batch9
-VN02 batch9
