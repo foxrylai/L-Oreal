@@ -65,7 +65,7 @@
    group       netadmin
   !
   user vinod
-   password    $6$zSsIMNBWXj.5x7HW$m53czpG9ye0cMx8V7wPLt4Aq5d4hA5.ogsPy1F7CC4QSOodu0rQXq52g32pMr1GDO0yCifBTzLRFau9lK9mtM1
+   password    $6$Cr5Cc7.4MCegEDSq$WFBASeaOD2n/TGfUlLUp.QENcpjuWYF9FzQlohRFYxbmWE2bw.dSMKUjhYc/q1lZWYpIL9k0h4r53Dh3Phj6b1
    description CiscoAS
    group       operator
   !
@@ -125,7 +125,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-1068940716
+     count nat_921587090
      nat use-vpn 0
      nat fallback
     !
@@ -138,7 +138,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_-1068940716
+     count nat_921587090
      nat use-vpn 0
      nat fallback
     !
@@ -164,7 +164,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_-1068940716
+     count nat_921587090
      nat use-vpn 0
      nat fallback
     !
@@ -188,7 +188,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-1068940716
+     count nat_921587090
      nat use-vpn 0
      nat fallback
     !
@@ -213,7 +213,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_-1068940716
+     count nat_921587090
      nat use-vpn 0
      nat fallback
     !
@@ -223,7 +223,7 @@ policy
      destination-data-prefix-list dpl_NANDAGLOBAL
     !
     action accept
-     count nat_-1068940716
+     count nat_921587090
      nat use-vpn 0
      nat fallback
     !
@@ -238,77 +238,6 @@ policy
     !
    !
    sequence 101
-    match
-     source-ip 0.0.0.0/0
-     protocol  17
-    !
-    action accept
-     cflowd
-    !
-   !
-   default-action accept
-  !
- !
- data-policy _vpn1_dp_CHINA-NozScaler
-  vpn-list vpn1
-   sequence 1
-    match
-     destination-data-prefix-list dpl_MSTeams_PREFIXES
-     protocol                     17
-    !
-    action accept
-     count nat_822957482
-     nat use-vpn 0
-     nat fallback
-    !
-   !
-   sequence 11
-    match
-     destination-data-prefix-list dpl_CN05
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet bronze
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 21
-    match
-     source-data-prefix-list      dpl_CHINA_NoZscaler
-     destination-data-prefix-list dpl_OA_PREFIXES
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 31
-    match
-     source-data-prefix-list dpl_CHINA_NoZscaler
-    !
-    action accept
-     count nat_822957482
-     nat use-vpn 0
-     nat fallback
-    !
-   !
-   sequence 41
-    match
-     source-ip 0.0.0.0/0
-     protocol  6
-    !
-    action accept
-     cflowd
-    !
-   !
-   sequence 51
     match
      source-ip 0.0.0.0/0
      protocol  17
@@ -417,101 +346,6 @@ policy
    default-action accept
   !
  !
- data-policy _vpn1_dp_CN25_CHINA-NozScaler
-  vpn-list vpn1
-   sequence 1
-    match
-     destination-data-prefix-list dpl_MSTeams_PREFIXES
-     protocol                     17
-    !
-    action accept
-     count nat_-1261473331
-     nat use-vpn 0
-     nat fallback
-    !
-   !
-   sequence 11
-    match
-     destination-data-prefix-list dpl_Zscaler_HK_SG
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 21
-    match
-     destination-data-prefix-list dpl_Zscaler_ZEN
-    !
-    action accept
-     set
-      vpn       1
-      tloc-list tl_GZGW_HKGW
-     !
-    !
-   !
-   sequence 31
-    match
-     destination-data-prefix-list dpl_CN05
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet bronze
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 41
-    match
-     source-data-prefix-list      dpl_CHINA_NoZscaler
-     destination-data-prefix-list dpl_OA_PREFIXES
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 51
-    match
-     source-data-prefix-list dpl_CHINA_NoZscaler
-    !
-    action accept
-     count nat_-1261473331
-     nat use-vpn 0
-     nat fallback
-    !
-   !
-   sequence 61
-    match
-     source-ip 0.0.0.0/0
-     protocol  6
-    !
-    action accept
-     cflowd
-    !
-   !
-   sequence 71
-    match
-     source-ip 0.0.0.0/0
-     protocol  17
-    !
-    action accept
-     cflowd
-    !
-   !
-   default-action accept
-  !
- !
  data-policy _vpn1_dp_ChinaSouth_O365test
   vpn-list vpn1
    sequence 1
@@ -520,7 +354,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_965649199
+     count nat_862750067
      nat use-vpn 0
      nat fallback
     !
@@ -557,7 +391,7 @@ policy
      source-data-prefix-list dpl_CHINA_NoZscaler
     !
     action accept
-     count nat_965649199
+     count nat_862750067
      nat use-vpn 0
      nat fallback
     !
@@ -637,7 +471,7 @@ policy
      destination-data-prefix-list dpl_ANY_PREFIXES
     !
     action accept
-     count nat_counter_788466199
+     count nat_counter_1039334494
      nat use-vpn 0
      nat fallback
     !
@@ -666,101 +500,6 @@ policy
    default-action accept
   !
  !
- data-policy _vpn1_vpn1_dp_CN20_CHINA-NozScaler
-  vpn-list vpn1
-   sequence 1
-    match
-     destination-data-prefix-list dpl_MSTeams_PREFIXES
-     protocol                     17
-    !
-    action accept
-     count nat_864102591
-     nat use-vpn 0
-     nat fallback
-    !
-   !
-   sequence 11
-    match
-     destination-data-prefix-list dpl_Zscaler_HK_SG
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 21
-    match
-     destination-data-prefix-list dpl_Zscaler_ZEN
-    !
-    action accept
-     set
-      vpn       1
-      tloc-list tl_CN20_GZGW_HKGW
-     !
-    !
-   !
-   sequence 31
-    match
-     destination-data-prefix-list dpl_CN05
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet bronze
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 41
-    match
-     source-data-prefix-list      dpl_CHINA_NoZscaler
-     destination-data-prefix-list dpl_OA_PREFIXES
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 51
-    match
-     source-data-prefix-list dpl_CHINA_NoZscaler
-    !
-    action accept
-     count nat_864102591
-     nat use-vpn 0
-     nat fallback
-    !
-   !
-   sequence 61
-    match
-     source-ip 0.0.0.0/0
-     protocol  6
-    !
-    action accept
-     cflowd
-    !
-   !
-   sequence 71
-    match
-     source-ip 0.0.0.0/0
-     protocol  17
-    !
-    action accept
-     cflowd
-    !
-   !
-   default-action accept
-  !
- !
  data-policy _vpn2_DP-INTRANET-TEST_VPN2_vpn1_DP-INTRANET-TEST_VPN1
   vpn-list vpn1
    sequence 1
@@ -769,7 +508,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_2062162529
+     count nat_1739845345
      nat use-vpn 0
      nat fallback
     !
@@ -807,7 +546,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_2062162529
+     count nat_1739845345
      nat use-vpn 0
      nat fallback
     !
@@ -832,7 +571,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_2062162529
+     count nat_1739845345
      nat use-vpn 0
      nat fallback
     !
@@ -878,7 +617,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-779647987
+     count nat_-944486155
      nat use-vpn 0
      nat fallback
     !
@@ -916,7 +655,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_-779647987
+     count nat_-944486155
      nat use-vpn 0
      nat fallback
     !
@@ -962,7 +701,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_337875205
+     count nat_14600589
      nat use-vpn 0
      nat fallback
     !
@@ -1000,7 +739,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_337875205
+     count nat_14600589
      nat use-vpn 0
      nat fallback
     !
@@ -1047,7 +786,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_337875206
+     count nat_14600590
      nat use-vpn 0
      nat fallback
     !
@@ -1063,7 +802,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_177616152
+     count nat_-146790624
      nat use-vpn 0
      nat fallback
     !
@@ -1075,7 +814,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_177616152
+     count nat_-146790624
      nat use-vpn 0
      nat fallback
     !
@@ -1101,7 +840,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_177616152
+     count nat_-146790624
      nat use-vpn 0
      nat fallback
     !
@@ -1138,7 +877,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_177616152
+     count nat_-146790624
      nat use-vpn 0
      nat fallback
     !
@@ -1178,7 +917,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_177616153
+     count nat_-146790623
      nat use-vpn 0
      nat fallback
     !
@@ -1194,7 +933,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_965865863
+     count nat_650034183
      nat use-vpn 0
      nat fallback
     !
@@ -1206,7 +945,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_965865863
+     count nat_650034183
      nat use-vpn 0
      nat fallback
     !
@@ -1232,7 +971,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_965865863
+     count nat_650034183
      nat use-vpn 0
      nat fallback
     !
@@ -1268,7 +1007,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_965865863
+     count nat_650034183
      nat use-vpn 0
      nat fallback
     !
@@ -1314,7 +1053,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-66656493
+     count nat_-380503909
      nat use-vpn 0
      nat fallback
     !
@@ -1326,7 +1065,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-66656493
+     count nat_-380503909
      nat use-vpn 0
      nat fallback
     !
@@ -1352,7 +1091,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_-66656493
+     count nat_-380503909
      nat use-vpn 0
      nat fallback
     !
@@ -1388,7 +1127,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-66656493
+     count nat_-380503909
      nat use-vpn 0
      nat fallback
     !
@@ -1434,7 +1173,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_311171056
+     count nat_2025519737
      nat use-vpn 0
      nat fallback
     !
@@ -1493,7 +1232,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_311171057
+     count nat_2025519738
      nat use-vpn 0
      nat fallback
     !
@@ -1516,7 +1255,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_976481677
+     count nat_-657397834
      nat use-vpn 0
      nat fallback
     !
@@ -1581,7 +1320,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_1046130486
+     count nat_-218275755
      nat use-vpn 0
      nat fallback
     !
@@ -1668,7 +1407,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_1046130486
+     count nat_-218275755
      nat use-vpn 0
      nat fallback
     !
@@ -1698,7 +1437,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_1046130487
+     count nat_-218275754
      nat use-vpn 0
      nat fallback
     !
@@ -1714,7 +1453,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-777051034
+     count nat_-848607770
      nat use-vpn 0
      nat fallback
     !
@@ -1748,7 +1487,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_-777051034
+     count nat_-848607770
      nat use-vpn 0
      nat fallback
     !
@@ -1778,7 +1517,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-777051033
+     count nat_-848607769
      nat use-vpn 0
      nat fallback
     !
@@ -1794,7 +1533,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_msteams_-1635664595
+     count nat_msteams_-1806828139
      nat use-vpn 0
      nat fallback
      set
@@ -1812,7 +1551,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msteams_tcp_-1635664595
+     count nat_msteams_tcp_-1806828139
      nat use-vpn 0
      nat fallback
      set
@@ -1830,7 +1569,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msexchange_-1635664595
+     count nat_msexchange_-1806828139
      nat use-vpn 0
      nat fallback
      set
@@ -1848,7 +1587,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mssharepoint_-1635664595
+     count nat_mssharepoint_-1806828139
      nat use-vpn 0
      nat fallback
      set
@@ -1866,7 +1605,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mscommono365_-1635664595
+     count nat_mscommono365_-1806828139
      nat use-vpn 0
      nat fallback
      set
@@ -1936,7 +1675,7 @@ policy
      destination-data-prefix-list dpl_ANY_PREFIXES
     !
     action accept
-     count nat_-1635664594
+     count nat_-1806828138
      nat use-vpn 0
      nat fallback
      set
@@ -1951,6 +1690,326 @@ policy
    default-action accept
   !
  !
+ data-policy _vpn2_dp_China_North_sites_VPN2_vpn1_dp_China_North_sites_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_counter_-2077072228
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_MSTeams_TCP_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_msteams_tcp_-2077072228
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 21
+    match
+     destination-data-prefix-list dpl_MSExchange_PREFIXES
+     destination-port             143 25 443 587 80 993 995
+     protocol                     6
+    !
+    action accept
+     count nat_msexchange_-2077072228
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_MSSharePoint_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mssharepoint_-2077072228
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dpl_MSCommonO365_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mscommono365_-2077072228
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     destination-data-prefix-list dpl_Zscaler_ZEN
+    !
+    action accept
+     set
+      vpn       1
+      tloc-list tl_SHGW_HKGW
+     !
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dpl_CHINA_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list dpl_CHINA_NoZscaler
+    !
+    action accept
+     count nat_counter_-2077072228
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 91
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-ip 0.0.0.0/0
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
+ data-policy _vpn2_dp_China_South_sites_VPN2_vpn1_dp_China_South_sites_VPN1
+  vpn-list vpn1
+   sequence 1
+    match
+     destination-data-prefix-list dpl_MSTeams_PREFIXES
+     protocol                     17
+    !
+    action accept
+     count nat_counter_-858691063
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 11
+    match
+     destination-data-prefix-list dpl_MSTeams_TCP_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_msteams_tcp_-858691063
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 21
+    match
+     destination-data-prefix-list dpl_MSExchange_PREFIXES
+     destination-port             143 25 443 587 80 993 995
+     protocol                     6
+    !
+    action accept
+     count nat_msexchange_-858691063
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 31
+    match
+     destination-data-prefix-list dpl_MSSharePoint_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mssharepoint_-858691063
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 41
+    match
+     destination-data-prefix-list dpl_MSCommonO365_PREFIXES
+     destination-port             443 80
+     protocol                     6
+    !
+    action accept
+     count nat_mscommono365_-858691063
+     nat use-vpn 0
+     nat fallback
+     set
+      local-tloc-list
+       color biz-internet bronze
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 51
+    match
+     destination-data-prefix-list dpl_Zscaler_ZEN
+    !
+    action accept
+     set
+      vpn       1
+      tloc-list tl_GZGW_HKGW
+     !
+    !
+   !
+   sequence 61
+    match
+     source-data-prefix-list      dpl_CHINA_NoZscaler
+     destination-data-prefix-list dpl_OA_PREFIXES
+    !
+    action accept
+     set
+      local-tloc-list
+       color biz-internet
+       encap ipsec
+      !
+     !
+    !
+   !
+   sequence 71
+    match
+     source-data-prefix-list dpl_CHINA_NoZscaler
+    !
+    action accept
+     count nat_counter_-858691063
+     nat use-vpn 0
+     nat fallback
+    !
+   !
+   sequence 81
+    match
+     source-ip 0.0.0.0/0
+     protocol  6
+    !
+    action accept
+     cflowd
+    !
+   !
+   sequence 91
+    match
+     source-ip 0.0.0.0/0
+     protocol  17
+    !
+    action accept
+     cflowd
+    !
+   !
+   default-action accept
+  !
+  vpn-list vpn2
+   sequence 1
+    match
+     source-ip        0.0.0.0/0
+     destination-port 67-68
+     protocol         17
+    !
+    action accept
+    !
+   !
+   sequence 11
+    match
+     source-ip 0.0.0.0/0
+    !
+    action accept
+    !
+   !
+   default-action accept
+  !
+ !
  data-policy _vpn2_dp_IGW_CHINA_CN02_VPN2_vpn1_dp_IGW_CHINA_CN02_VPN1
   vpn-list vpn1
    sequence 1
@@ -1959,7 +2018,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-542208130
+     count nat_-714321690
      nat use-vpn 0
      nat fallback
      set
@@ -2026,7 +2085,7 @@ policy
      source-data-prefix-list dpl_CHINA_NoZscaler
     !
     action accept
-     count nat_-542208130
+     count nat_-714321690
      nat use-vpn 0
      nat fallback
     !
@@ -2074,7 +2133,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-542208129
+     count nat_-714321689
      nat use-vpn 0
      nat fallback
     !
@@ -2090,9 +2149,15 @@ policy
      protocol                     17
     !
     action accept
-     count nat_counter_888288792
+     count nat_counter_243973042
      nat use-vpn 0
      nat fallback
+     set
+      local-tloc-list
+       color public-internet
+       encap ipsec
+      !
+     !
     !
    !
    sequence 11
@@ -2102,12 +2167,12 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msteams_tcp_888288792
+     count nat_msteams_tcp_243973042
      nat use-vpn 0
      nat fallback
      set
       local-tloc-list
-       color biz-internet public-internet
+       color public-internet
        encap ipsec
       !
      !
@@ -2120,12 +2185,12 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msexchange_888288792
+     count nat_msexchange_243973042
      nat use-vpn 0
      nat fallback
      set
       local-tloc-list
-       color biz-internet public-internet
+       color public-internet
        encap ipsec
       !
      !
@@ -2138,12 +2203,12 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mssharepoint_888288792
+     count nat_mssharepoint_243973042
      nat use-vpn 0
      nat fallback
      set
       local-tloc-list
-       color biz-internet public-internet
+       color biz-internet bronze
        encap ipsec
       !
      !
@@ -2156,7 +2221,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mscommono365_888288792
+     count nat_mscommono365_243973042
      nat use-vpn 0
      nat fallback
      set
@@ -2186,7 +2251,7 @@ policy
      source-data-prefix-list CHINA-BR-VIP
     !
     action accept
-     count GD8-traffic_888288792
+     count GD8-traffic_243973042
      nat use-vpn 0
      nat fallback
      set
@@ -2228,7 +2293,7 @@ policy
      source-data-prefix-list dpl_CHINA_NoZscaler
     !
     action accept
-     count nat_888288792
+     count nat_243973042
      nat use-vpn 0
      nat fallback
     !
@@ -2251,210 +2316,6 @@ policy
     !
    !
    sequence 121
-    match
-     source-ip 0.0.0.0/0
-     protocol  17
-    !
-    action accept
-     cflowd
-    !
-   !
-   default-action accept
-  !
-  vpn-list vpn2
-   sequence 1
-    match
-     source-ip        0.0.0.0/0
-     destination-port 67-68
-     protocol         17
-    !
-    action accept
-    !
-   !
-   default-action accept
-  !
- !
- data-policy _vpn2_dp_IGW_CHINA_TEST_VPN2_vpn1_dp_IGW_CHINA_TEST
-  vpn-list vpn1
-   sequence 1
-    match
-     destination-data-prefix-list dpl_MSTeams_PREFIXES
-     protocol                     17
-    !
-    action accept
-     count nat_counter_-1418935235
-     nat use-vpn 0
-     nat fallback
-    !
-   !
-   sequence 11
-    match
-     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
-     destination-data-prefix-list dpl_MSTeams_TCP_PREFIXES
-     destination-port             443 80
-     protocol                     6
-    !
-    action accept
-     count nat_msteams_tcp_-1418935235
-     nat use-vpn 0
-     nat fallback
-     set
-      local-tloc-list
-       color biz-internet bronze
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 21
-    match
-     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
-     destination-data-prefix-list dpl_MSExchange_PREFIXES
-     destination-port             143 25 443 587 80 993 995
-     protocol                     6
-    !
-    action accept
-     count nat_msexchange_-1418935235
-     nat use-vpn 0
-     nat fallback
-     set
-      local-tloc-list
-       color biz-internet bronze
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 31
-    match
-     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
-     destination-data-prefix-list dpl_MSSharePoint_PREFIXES
-     destination-port             443 80
-     protocol                     6
-    !
-    action accept
-     count nat_mssharepoint_-1418935235
-     nat use-vpn 0
-     nat fallback
-     set
-      local-tloc-list
-       color biz-internet bronze
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 41
-    match
-     source-data-prefix-list      dpl_CN06_CN40_Teyes_Agents
-     destination-data-prefix-list dpl_MSCommonO365_PREFIXES
-     destination-port             443 80
-     protocol                     6
-    !
-    action accept
-     count nat_mscommono365_-1418935235
-     nat use-vpn 0
-     nat fallback
-     set
-      local-tloc-list
-       color biz-internet bronze
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 51
-    match
-     destination-data-prefix-list dpl_Zscaler_HK_SG
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 61
-    match
-     destination-data-prefix-list dpl_Zscaler_ZEN
-    !
-    action accept
-     set
-      vpn       1
-      tloc-list tl_SHGW_HKGW
-     !
-    !
-   !
-   sequence 71
-    match
-     destination-data-prefix-list dpl_CN05
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet bronze
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 81
-    match
-     destination-data-prefix-list dpl_CN50
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet public-internet bronze
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 91
-    match
-     source-data-prefix-list      dpl_CHINA_NoZscaler
-     destination-data-prefix-list dpl_OA_PREFIXES
-    !
-    action accept
-     set
-      local-tloc-list
-       color biz-internet
-       encap ipsec
-      !
-     !
-    !
-   !
-   sequence 101
-    match
-     source-data-prefix-list dpl_CHINA_NoZscaler
-    !
-    action accept
-     count nat_counter_-1418935235
-     nat use-vpn 0
-     nat fallback
-    !
-   !
-   sequence 111
-    match
-     destination-data-prefix-list dpl_OA_PREFIXES
-    !
-    action accept
-     cflowd
-    !
-   !
-   sequence 121
-    match
-     source-ip 0.0.0.0/0
-     protocol  6
-    !
-    action accept
-     cflowd
-    !
-   !
-   sequence 131
     match
      source-ip 0.0.0.0/0
      protocol  17
@@ -2486,7 +2347,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-1592148148
+     count nat_-972695180
      nat use-vpn 0
      nat fallback
     !
@@ -2498,7 +2359,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msteams_tcp_-1592148148
+     count nat_msteams_tcp_-972695180
      nat use-vpn 0
      nat fallback
     !
@@ -2510,7 +2371,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msexchange_-1592148148
+     count nat_msexchange_-972695180
      nat use-vpn 0
      nat fallback
     !
@@ -2522,7 +2383,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mssharepoint_-1592148148
+     count nat_mssharepoint_-972695180
      nat use-vpn 0
      nat fallback
     !
@@ -2534,7 +2395,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mscommono365_-1592148148
+     count nat_mscommono365_-972695180
      nat use-vpn 0
      nat fallback
     !
@@ -2558,7 +2419,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-1592148148
+     count nat_-972695180
      nat use-vpn 0
      nat fallback
     !
@@ -2583,7 +2444,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_-1592148148
+     count nat_-972695180
      nat use-vpn 0
      nat fallback
     !
@@ -2607,7 +2468,7 @@ policy
      source-data-prefix-list dpl_ThousandEye
     !
     action accept
-     count nat_-1592148148
+     count nat_-972695180
      nat use-vpn 0
      nat fallback
     !
@@ -2617,7 +2478,7 @@ policy
      destination-data-prefix-list dpl_WEBSITES
     !
     action accept
-     count nat_-1592148148
+     count nat_-972695180
      nat use-vpn 0
      nat fallback
     !
@@ -2670,7 +2531,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_1942230999
+     count nat_1617947991
      nat use-vpn 0
      nat fallback
     !
@@ -2704,7 +2565,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_1942230999
+     count nat_1617947991
      nat use-vpn 0
      nat fallback
     !
@@ -2728,7 +2589,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_1942230999
+     count nat_1617947991
      nat use-vpn 0
      nat fallback
     !
@@ -2753,7 +2614,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_1942230999
+     count nat_1617947991
      nat use-vpn 0
      nat fallback
     !
@@ -2777,7 +2638,7 @@ policy
      source-data-prefix-list dpl_ThousandEye
     !
     action accept
-     count nat_1942230999
+     count nat_1617947991
      nat use-vpn 0
      nat fallback
     !
@@ -2787,7 +2648,7 @@ policy
      destination-data-prefix-list dpl_NANDAGLOBAL
     !
     action accept
-     count nat_1942230999
+     count nat_1617947991
      nat use-vpn 0
      nat fallback
     !
@@ -2833,7 +2694,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-2010618594
+     count nat_1962005158
      nat use-vpn 0
      nat fallback
     !
@@ -2884,7 +2745,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_-2010618594
+     count nat_1962005158
      nat use-vpn 0
      nat fallback
     !
@@ -2908,7 +2769,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-2010618594
+     count nat_1962005158
      nat use-vpn 0
      nat fallback
     !
@@ -2933,7 +2794,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_-2010618594
+     count nat_1962005158
      nat use-vpn 0
      nat fallback
     !
@@ -2957,7 +2818,7 @@ policy
      source-data-prefix-list dpl_ThousandEye
     !
     action accept
-     count nat_-2010618594
+     count nat_1962005158
      nat use-vpn 0
      nat fallback
     !
@@ -2967,7 +2828,7 @@ policy
      destination-data-prefix-list dpl_NANDAGLOBAL
     !
     action accept
-     count nat_-2010618594
+     count nat_1962005158
      nat use-vpn 0
      nat fallback
     !
@@ -3013,7 +2874,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-607608847
+     count nat_-1144190835
      nat use-vpn 0
      nat fallback
     !
@@ -3051,7 +2912,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_-607608847
+     count nat_-1144190835
      nat use-vpn 0
      nat fallback
     !
@@ -3064,7 +2925,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_-607608847
+     count nat_-1144190835
      nat use-vpn 0
      nat fallback
     !
@@ -3088,7 +2949,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-607608847
+     count nat_-1144190835
      nat use-vpn 0
      nat fallback
     !
@@ -3113,7 +2974,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_-607608847
+     count nat_-1144190835
      nat use-vpn 0
      nat fallback
     !
@@ -3123,7 +2984,7 @@ policy
      destination-data-prefix-list dpl_NANDAGLOBAL
     !
     action accept
-     count nat_-607608847
+     count nat_-1144190835
      nat use-vpn 0
      nat fallback
     !
@@ -3176,7 +3037,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_317220523
+     count nat_1639831676
      nat use-vpn 0
      nat fallback
     !
@@ -3188,7 +3049,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_317220523
+     count nat_1639831676
      nat use-vpn 0
      nat fallback
     !
@@ -3214,7 +3075,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_317220523
+     count nat_1639831676
      nat use-vpn 0
      nat fallback
     !
@@ -3239,7 +3100,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_317220523
+     count nat_1639831676
      nat use-vpn 0
      nat fallback
     !
@@ -3263,7 +3124,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_317220523
+     count nat_1639831676
      nat use-vpn 0
      nat fallback
     !
@@ -3288,7 +3149,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_317220523
+     count nat_1639831676
      nat use-vpn 0
      nat fallback
     !
@@ -3298,7 +3159,7 @@ policy
      destination-data-prefix-list dpl_NANDAGLOBAL
     !
     action accept
-     count nat_317220523
+     count nat_1639831676
      nat use-vpn 0
      nat fallback
     !
@@ -3338,7 +3199,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_317220524
+     count nat_1639831677
      nat use-vpn 0
      nat fallback
     !
@@ -3361,7 +3222,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_1941091259
+     count nat_225154390
      nat use-vpn 0
      nat fallback
     !
@@ -3373,7 +3234,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_1941091259
+     count nat_225154390
      nat use-vpn 0
      nat fallback
     !
@@ -3399,7 +3260,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_1941091259
+     count nat_225154390
      nat use-vpn 0
      nat fallback
     !
@@ -3424,7 +3285,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_1941091259
+     count nat_225154390
      nat use-vpn 0
      nat fallback
     !
@@ -3448,7 +3309,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_1941091259
+     count nat_225154390
      nat use-vpn 0
      nat fallback
     !
@@ -3473,7 +3334,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_1941091259
+     count nat_225154390
      nat use-vpn 0
      nat fallback
     !
@@ -3483,7 +3344,7 @@ policy
      destination-data-prefix-list dpl_NANDAGLOBAL
     !
     action accept
-     count nat_1941091259
+     count nat_225154390
      nat use-vpn 0
      nat fallback
     !
@@ -3529,7 +3390,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-10814601
+     count nat_-333099521
      nat use-vpn 0
      nat fallback
     !
@@ -3541,7 +3402,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-10814601
+     count nat_-333099521
      nat use-vpn 0
      nat fallback
     !
@@ -3566,7 +3427,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_-10814601
+     count nat_-333099521
      nat use-vpn 0
      nat fallback
     !
@@ -3590,7 +3451,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-10814601
+     count nat_-333099521
      nat use-vpn 0
      nat fallback
     !
@@ -3615,7 +3476,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_-10814601
+     count nat_-333099521
      nat use-vpn 0
      nat fallback
     !
@@ -3639,7 +3500,7 @@ policy
      source-data-prefix-list dpl_ThousandEye
     !
     action accept
-     count nat_-10814601
+     count nat_-333099521
      nat use-vpn 0
      nat fallback
     !
@@ -3649,7 +3510,7 @@ policy
      destination-data-prefix-list dpl_NANDAGLOBAL
     !
     action accept
-     count nat_-10814601
+     count nat_-333099521
      nat use-vpn 0
      nat fallback
     !
@@ -3689,7 +3550,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-10814600
+     count nat_-333099520
      nat use-vpn 0
      nat fallback
     !
@@ -3705,7 +3566,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_msteams_-1346330769
+     count nat_msteams_-1669688337
      nat use-vpn 0
      nat fallback
     !
@@ -3743,7 +3604,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_-1346330769
+     count nat_-1669688337
      nat use-vpn 0
      nat fallback
     !
@@ -3756,7 +3617,7 @@ policy
      protocol                     6
     !
     action accept
-     count stepplus_-1346330769
+     count stepplus_-1669688337
      nat use-vpn 0
      nat fallback
     !
@@ -3766,7 +3627,7 @@ policy
      destination-data-prefix-list dpl_WEBSITES
     !
     action accept
-     count nat_websites_-1346330769
+     count nat_websites_-1669688337
      nat use-vpn 0
     !
    !
@@ -3789,7 +3650,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-1346330769
+     count nat_-1669688337
      nat use-vpn 0
      nat fallback
     !
@@ -3799,7 +3660,7 @@ policy
      destination-data-prefix-list dpl_NANDAGLOBAL
     !
     action accept
-     count nat_-1346330769
+     count nat_-1669688337
      nat use-vpn 0
      nat fallback
     !
@@ -3839,7 +3700,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-1346330768
+     count nat_-1669688336
      nat use-vpn 0
      nat fallback
     !
@@ -3855,7 +3716,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_1553831860
+     count nat_1222086972
      nat use-vpn 0
      nat fallback
     !
@@ -3880,7 +3741,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_1553831860
+     count nat_1222086972
      nat use-vpn 0
      nat fallback
     !
@@ -3904,7 +3765,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_1553831860
+     count nat_1222086972
      nat use-vpn 0
      nat fallback
     !
@@ -3929,7 +3790,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_1553831860
+     count nat_1222086972
      nat use-vpn 0
      nat fallback
     !
@@ -3953,7 +3814,7 @@ policy
      source-data-prefix-list dpl_ThousandEye
     !
     action accept
-     count nat_1553831860
+     count nat_1222086972
      nat use-vpn 0
      nat fallback
     !
@@ -3963,7 +3824,7 @@ policy
      destination-data-prefix-list dpl_NANDAGLOBAL
     !
     action accept
-     count nat_1553831860
+     count nat_1222086972
      nat use-vpn 0
      nat fallback
     !
@@ -4003,7 +3864,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_1553831861
+     count nat_1222086973
      nat use-vpn 0
      nat fallback
     !
@@ -4019,7 +3880,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-1959277697
+     count nat_-1839038457
      nat use-vpn 0
      nat fallback
     !
@@ -4031,7 +3892,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msteams_tcp_-1959277697
+     count nat_msteams_tcp_-1839038457
      nat use-vpn 0
      nat fallback
     !
@@ -4043,7 +3904,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msexchange_-1959277697
+     count nat_msexchange_-1839038457
      nat use-vpn 0
      nat fallback
     !
@@ -4055,7 +3916,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mssharepoint_-1959277697
+     count nat_mssharepoint_-1839038457
      nat use-vpn 0
      nat fallback
     !
@@ -4067,7 +3928,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mscommono365_-1959277697
+     count nat_mscommono365_-1839038457
      nat use-vpn 0
      nat fallback
     !
@@ -4079,7 +3940,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-1959277697
+     count nat_-1839038457
      nat use-vpn 0
      nat fallback
     !
@@ -4105,7 +3966,7 @@ policy
      protocol                     1
     !
     action accept
-     count nat_-1959277697
+     count nat_-1839038457
      nat use-vpn 0
      nat fallback
     !
@@ -4130,7 +3991,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_-1959277697
+     count nat_-1839038457
      nat use-vpn 0
      nat fallback
     !
@@ -4154,7 +4015,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-1959277697
+     count nat_-1839038457
      nat use-vpn 0
      nat fallback
     !
@@ -4179,7 +4040,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_-1959277697
+     count nat_-1839038457
      nat use-vpn 0
      nat fallback
     !
@@ -4189,7 +4050,7 @@ policy
      destination-data-prefix-list dpl_WEBSITES
     !
     action accept
-     count nat_-1959277697
+     count nat_-1839038457
      nat use-vpn 0
      nat fallback
     !
@@ -4229,7 +4090,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-1959277696
+     count nat_-1839038456
      nat use-vpn 0
      nat fallback
     !
@@ -4252,7 +4113,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-1176540644
+     count nat_-1055283548
      nat use-vpn 0
      nat fallback
     !
@@ -4264,7 +4125,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msteams_tcp_-1176540644
+     count nat_msteams_tcp_-1055283548
      nat use-vpn 0
      nat fallback
     !
@@ -4276,7 +4137,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_msexchange_-1176540644
+     count nat_msexchange_-1055283548
      nat use-vpn 0
      nat fallback
     !
@@ -4288,7 +4149,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mssharepoint_-1176540644
+     count nat_mssharepoint_-1055283548
      nat use-vpn 0
      nat fallback
     !
@@ -4300,7 +4161,7 @@ policy
      protocol                     6
     !
     action accept
-     count nat_mscommono365_-1176540644
+     count nat_mscommono365_-1055283548
      nat use-vpn 0
      nat fallback
     !
@@ -4312,7 +4173,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_-1176540644
+     count nat_-1055283548
      nat use-vpn 0
      nat fallback
     !
@@ -4336,7 +4197,7 @@ policy
      source-data-prefix-list dp_NoZscaler
     !
     action accept
-     count nat_-1176540644
+     count nat_-1055283548
      nat use-vpn 0
      nat fallback
     !
@@ -4361,7 +4222,7 @@ policy
      destination-data-prefix-list dpl_webex_destination
     !
     action accept
-     count nat_-1176540644
+     count nat_-1055283548
      nat use-vpn 0
      nat fallback
     !
@@ -4385,7 +4246,7 @@ policy
      source-data-prefix-list dpl_ThousandEye
     !
     action accept
-     count nat_-1176540644
+     count nat_-1055283548
      nat use-vpn 0
      nat fallback
     !
@@ -4395,7 +4256,7 @@ policy
      destination-data-prefix-list dpl_WEBSITES
     !
     action accept
-     count nat_-1176540644
+     count nat_-1055283548
      nat use-vpn 0
      nat fallback
     !
@@ -4408,7 +4269,7 @@ policy
      protocol                     17
     !
     action accept
-     count nat_amazon_connect_-1176540644
+     count nat_amazon_connect_-1055283548
      nat use-vpn 0
      nat fallback
     !
@@ -4551,7 +4412,7 @@ policy
      destination-data-prefix-list dpl_Zscaler_HK_SG
     !
     action
-     count                      INT_-1412067039
+     count                      INT_-1495551595
      backup-sla-preferred-color mpls gold
      sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
     !
@@ -4592,7 +4453,7 @@ policy
      cloud-saas-app-list office365_apps
     !
     action
-     count SAAS_-1412067039
+     count SAAS_-1495551595
      cloud-saas
     !
    !
@@ -4678,7 +4539,7 @@ policy
      destination-data-prefix-list dpl_OA_PREFIXES
     !
     action
-     count                      test_1357172488
+     count                      test_1597555027
      backup-sla-preferred-color biz-internet public-internet bronze
      sla-class SLA_MPLS preferred-color mpls gold
     !
@@ -4690,7 +4551,7 @@ policy
      app-list                     FILE_SERVER
     !
     action
-     count                      server_1357172488
+     count                      server_1597555027
      backup-sla-preferred-color mpls gold
      sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
     !
@@ -4700,7 +4561,7 @@ policy
      destination-data-prefix-list dpl_OA_PREFIXES
     !
     action
-     count                      last_1357172488
+     count                      last_1597555027
      backup-sla-preferred-color mpls gold
      sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
     !
@@ -4752,7 +4613,7 @@ policy
      destination-data-prefix-list dpl_Zscaler_HK_SG
     !
     action
-     count                      INT_2028635289
+     count                      INT_1917378269
      backup-sla-preferred-color mpls gold
      sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
     !
@@ -4816,7 +4677,7 @@ policy
      destination-data-prefix-list dpl_OA_PREFIXES
     !
     action
-     count                      test_-295614461
+     count                      test_-399658425
      backup-sla-preferred-color biz-internet public-internet bronze
      sla-class SLA_MPLS preferred-color mpls gold
     !
@@ -4828,7 +4689,7 @@ policy
      app-list                     FILE_SERVER
     !
     action
-     count                      server_-295614461
+     count                      server_-399658425
      backup-sla-preferred-color mpls gold
      sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
     !
@@ -4838,7 +4699,7 @@ policy
      destination-data-prefix-list dpl_OA_PREFIXES
     !
     action
-     count                      last_-295614461
+     count                      last_-399658425
      backup-sla-preferred-color mpls gold
      sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
     !
@@ -4890,7 +4751,7 @@ policy
      destination-data-prefix-list dpl_Zscaler_HK_SG
     !
     action
-     count                      INT_-786922836
+     count                      INT_-869358816
      backup-sla-preferred-color mpls gold
      sla-class SLA_INTERNET preferred-color biz-internet public-internet bronze
     !
@@ -5080,15 +4941,8 @@ policy
   data-prefix-list dpl_CN05
    ip-prefix 10.72.139.115/32
   !
-  data-prefix-list dpl_CN06_CN40_Teyes_Agents
-   ip-prefix 10.72.64.67/32
-   ip-prefix 10.243.160.12/32
-  !
   data-prefix-list dpl_CN40
    ip-prefix 10.243.128.0/18
-  !
-  data-prefix-list dpl_CN50
-   ip-prefix 10.102.32.10/32
   !
   data-prefix-list dpl_DNS
    ip-prefix 1.1.1.1/32
@@ -5336,12 +5190,6 @@ policy
    tloc 10.218.32.32 color biz-internet encap ipsec preference 240
    tloc 10.218.32.32 color gold encap ipsec preference 240
    tloc 10.218.32.32 color bronze encap ipsec preference 240
-  !
-  tloc-list tl_CN20_GZGW_HKGW
-   tloc 10.218.32.30 color biz-internet encap ipsec preference 200
-   tloc 10.218.32.30 color public-internet encap ipsec preference 200
-   tloc 10.218.32.36 color biz-internet encap ipsec preference 100
-   tloc 10.218.32.36 color public-internet encap ipsec preference 100
   !
   tloc-list tl_GZGWTEST
    tloc 10.99.201.1 color mpls encap ipsec preference 200
@@ -5954,11 +5802,6 @@ policy
    site-id 20863315
    site-id 20863341-20863352
   !
-  site-list sl_CHINA_NoZscaler
-   site-id 20862312
-   site-id 20862413-20862416
-   site-id 20863352
-  !
   site-list sl_CHINA_SOUTH_Sites
    site-id 20861114
    site-id 20861125
@@ -5982,18 +5825,6 @@ policy
   !
   site-list sl_CHINA_o365test
    site-id 2222
-  !
-  site-list sl_CN20_HKGW_TEST
-   site-id 20862320
-  !
-  site-list sl_CN25_HKGW_TEST
-   site-id 20861114
-   site-id 20861125
-   site-id 20862132
-   site-id 20862309
-   site-id 20862332
-   site-id 20862409
-   site-id 20862417
   !
   site-list sl_CN40
    site-id 20861140
@@ -6029,25 +5860,6 @@ policy
   !
   site-list sl_DP_CHINA_IGW_CN02
    site-id 20862102
-  !
-  site-list sl_DP_CHINA_IGW_TEST
-   site-id 20861105-20861107
-   site-id 20862231
-   site-id 20862233-20862234
-   site-id 20862241
-   site-id 20862310
-   site-id 20862313
-   site-id 20862324
-   site-id 20862331
-   site-id 20862333-20862334
-   site-id 20862338
-   site-id 20862341
-   site-id 20862351
-   site-id 20862353
-   site-id 20862408
-   site-id 20862410
-   site-id 20862412
-   site-id 20863315
   !
   site-list sl_DP_CN40
    site-id 20861140
@@ -6118,6 +5930,33 @@ policy
   !
   site-list sl_SHGW
    site-id 20869901
+  !
+  site-list sl_dp_China_North_Sites
+   site-id 20861105
+   site-id 20861106
+   site-id 20861107
+   site-id 20862310
+   site-id 20862313
+   site-id 20862324
+   site-id 20862331
+   site-id 20862333
+   site-id 20862334
+   site-id 20862338
+   site-id 20862341
+   site-id 20862351
+   site-id 20862408
+   site-id 20862412
+   site-id 20863315
+   site-id 20863352
+  !
+  site-list sl_dp_China_South_Sites
+   site-id 20861114
+   site-id 20861125
+   site-id 20862309
+   site-id 20862320
+   site-id 20862332
+   site-id 20862353
+   site-id 20862417
   !
   site-list sl_dp_India_Sites
    site-id 20910238
@@ -8513,10 +8352,6 @@ apply-policy
   control-policy cp_FROM_CHINA_Subzone in
   control-policy cp_TO_CHINA_NORTH_Subzone out
  !
- site-list sl_CHINA_NoZscaler
-  data-policy _vpn1_dp_CHINA-NozScaler all
-  cflowd-template LOREAL-CFLOWD_10-164-65-4
- !
  site-list sl_CHINA_SOUTH_Sites
   control-policy cp_FROM_CHINA_Subzone in
   control-policy cp_TO_CHINA_SOUTH_Subzone out
@@ -8527,14 +8362,6 @@ apply-policy
   data-policy _vpn1_dp_ChinaSouth_O365test all
   app-route-policy _vpn1_arp_ChinaSouth_o365test
   cflowd-template  LOREAL-CFLOWD_10-164-65-4
- !
- site-list sl_CN20_HKGW_TEST
-  data-policy _vpn1_vpn1_dp_CN20_CHINA-NozScaler from-service
-  cflowd-template LOREAL-CFLOWD_10-164-65-4
- !
- site-list sl_CN25_HKGW_TEST
-  data-policy _vpn1_dp_CN25_CHINA-NozScaler all
-  cflowd-template LOREAL-CFLOWD_10-164-65-4
  !
  site-list sl_COR_DP_Intra_DNS_North_Zscale
   data-policy _vpn2_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_North_Zscaler_VPN2_vpn1_dp_MERAKI_LAN_Intranet_DNS_Webx_1000eye_North_VPN1 all
@@ -8570,10 +8397,6 @@ apply-policy
  !
  site-list sl_DP_CHINA_IGW_CN02
   data-policy _vpn2_dp_IGW_CHINA_CN02_VPN2_vpn1_dp_IGW_CHINA_CN02_VPN1 all
-  cflowd-template LOREAL-CFLOWD_10-164-65-4
- !
- site-list sl_DP_CHINA_IGW_TEST
-  data-policy _vpn2_dp_IGW_CHINA_TEST_VPN2_vpn1_dp_IGW_CHINA_TEST all
   cflowd-template LOREAL-CFLOWD_10-164-65-4
  !
  site-list sl_DP_CN40
@@ -8630,6 +8453,14 @@ apply-policy
   data-policy _vpn1_dp_CHINAGW all
   app-route-policy _vpn1_arp_CHINA_GW
   cflowd-template  LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_dp_China_North_Sites
+  data-policy _vpn2_dp_China_North_sites_VPN2_vpn1_dp_China_North_sites_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
+ !
+ site-list sl_dp_China_South_Sites
+  data-policy _vpn2_dp_China_South_sites_VPN2_vpn1_dp_China_South_sites_VPN1 all
+  cflowd-template LOREAL-CFLOWD_10-164-65-4
  !
  site-list sl_dp_India_Sites
   data-policy _vpn2_dp_India_Sites_VPN2_vpn1_dp_India_Sites_VPN1 all

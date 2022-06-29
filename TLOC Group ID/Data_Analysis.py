@@ -1,4 +1,5 @@
 import os
+import site
 from openpyxl import Workbook
 from openpyxl.worksheet.table import Table, TableStyleInfo
 from openpyxl.styles import PatternFill, Side, Border
@@ -8,9 +9,9 @@ from openpyxl.styles.colors import Color
 from openpyxl.utils import get_column_letter
 
 path = input('please input log files path \n')
-path_excel = r'E:\Document\003_TLOC Group ID\check_files'
-site_list = r'E:\Document\003_TLOC Group ID\site_list.txt'
-batch_list = r'E:\Document\003_TLOC Group ID\batch_list.txt'
+path_excel = r'Y:\WorkFiles\Document\003_TLOC Group ID\check_files'
+site_list = r'E:\Python\L-Oreal\TLOC Group ID\site_list.txt'
+batch_list = r'E:\Python\L-Oreal\TLOC Group ID\batch_list.txt'
 site_id_dict = {}
 site_batch_dict = {}
 
@@ -34,7 +35,7 @@ def ws_format(ws, tablename,width="auto"):
 
     table_ref = "A1:"+ max_cell_coordinat
     tab = Table(displayName=tablename, ref=table_ref)
-    style = TableStyleInfo(name="TableStyleMedium2", bandedColumn=False, showFirstColumn=False,showLastColumn=False,showRowStripes=True,showColumnStripes=True,)
+    style = TableStyleInfo(name="TableStyleMedium2", showFirstColumn=False,showLastColumn=False,showRowStripes=True,showColumnStripes=True,)
     tab.tableStyleInfo = style
     ws.add_table(tab)
 
@@ -57,10 +58,8 @@ with open (site_list,'r') as f:
     site_id_list = f.read()
     site_id_list = site_id_list.split('\n')
     for line in site_id_list:
-        line = line.strip(' ')
-        if line != '':
-            temp_list = line.split('\t')
-            site_id_dict[temp_list[0]] = temp_list[1]
+        temp_list = line.split(' ')
+        site_id_dict[temp_list[0]] = temp_list[1]
 
 #site name - batch list mapping info
 with open(batch_list, 'r') as f:
@@ -130,4 +129,4 @@ for router in router_list:
     tablename = "table"+str(i)
     ws_format(ws,tablename)
     i += 1
-wb.save(os.path.join(path_excel,'31th-May Removed BFD sessions on SDWAN routers check.xlsx'))
+wb.save(os.path.join(path_excel,'28th-June Removed BFD sessions on SDWAN routers check.xlsx'))
